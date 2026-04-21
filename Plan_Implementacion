@@ -1,0 +1,69 @@
+# Project Initialization: SGH-V1 Infrastructure & Data Models
+
+This plan covers the initial setup of the "Sistema Integral de Habilitaciones" (SGH-V1) based on the provided "Master Document". We will set up the containerized environment and the core data models.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The project structure will be created directly in the root of the repository (`c:\Users\Admin\GitHub\SGH-V1\`). This includes `backend/` and `frontend/` directories.
+
+## Proposed Changes
+
+### Infrastructure
+
+#### [NEW] [docker-compose.yml](file:///c:/Users/Admin/GitHub/SGH-V1/docker-compose.yml)
+Define three services:
+- `db`: PostgreSQL 15+ container with a persistent volume.
+- `backend`: FastAPI application container.
+- `frontend`: Simple `nginx` container to serve static HTML/JS/CSS files.
+
+#### [NEW] [.env](file:///c:/Users/Admin/GitHub/SGH-V1/.env)
+Store environment variables for the database (USER, PASSWORD, NAME) and security secrets (JWT SECRET).
+
+---
+
+### Backend
+
+#### [NEW] [Dockerfile](file:///c:/Users/Admin/GitHub/SGH-V1/backend/Dockerfile)
+Python 3.11 image, installation of dependencies from `requirements.txt`, and entrypoint for `uvicorn`.
+
+#### [NEW] [requirements.txt](file:///c:/Users/Admin/GitHub/SGH-V1/backend/requirements.txt)
+Include: `fastapi`, `uvicorn`, `sqlalchemy`, `alembic`, `pydantic-settings`, `psycopg2-binary` (or `asyncpg`), `python-jose`, `passlib`.
+
+#### [NEW] [app/main.py](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/main.py)
+Initial FastAPI entry point with basic routes and dependency injection for the database.
+
+#### [NEW] [app/db/models/](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/db/models/)
+Implement the following entities using SQLAlchemy 2.0:
+- `Persona`, `Empresa`, `Documento`, `Estado`, `Habilitacion`, `Alerta`, `Usuario`, `Auditoria`.
+
+#### [NEW] [app/core/config.py](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/core/config.py)
+Configuration management using `pydantic-settings`.
+
+---
+
+### Frontend
+
+#### [NEW] [index.html](file:///c:/Users/Admin/GitHub/SGH-V1/frontend/index.html)
+Initial landing page with Bootstrap 5 setup.
+
+#### [NEW] [js/api.js](file:///c:/Users/Admin/GitHub/SGH-V1/frontend/js/api.js)
+Base wrapper for `fetch()` to handle authentication and standard API responses.
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Project Hierarchy**: Should I create the `habilitaciones-app/` folder as a subdirectory (as shown in the README), or are you comfortable with `backend/` and `frontend/` being in the repo root?
+> 2. **ORM Preference**: Do you want asynchronous (`asyncpg`) or synchronous (`psycopg2`) database connections?
+> 3. **Database Credentials**: Should I use generic defaults for now, or do you want to provide specific values?
+
+## Verification Plan
+
+### Automated Tests
+- `docker-compose up`: Verify all containers start correctly.
+- `curl http://localhost:8000/docs`: Verify FastAPI documentation is accessible.
+- `alembic upgrade head`: Verify database migrations run perfectly.
+
+### Manual Verification
+- Check database connection by running a simple query via a test script.
+- Verify that the frontend `index.html` loads correctly via the browser.

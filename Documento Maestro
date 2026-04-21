@@ -1,0 +1,252 @@
+📘 DOCUMENTO MAESTRO — Sistema Integral de Habilitaciones
+Versión: 1.0
+Autor: Omar A. Domínguez
+Arquitectura:  Omar
+Fecha: 2026
+
+Índice
+1.Visión General del Sistema
+2.Modelo de Negocio y Procesos
+3.Modelo de Datos
+4.API (OpenAPI) y Endpoints
+5.Arquitectura Técnica
+6.Seguridad, Roles y Acceso Empresa Externa
+7.UI: Vistas, Flujos y Componentes
+8.Testing y QA
+9.Migración Access → Webapp
+10.Plan de Proyecto (Sprints, Entregables, Hitos)
+11.Anexos Técnicos
+
+-----------------------------------------------------
+
+1. Visión General del Sistema
+El sistema de habilitaciones es una plataforma web destinada a:
+
+* Gestionar personas, empresas y documentación regulatoria.
+* Automatizar el flujo de aprobación documental.
+* Generar habilitaciones por jurisdicción.
+* Controlar vencimientos y alertas.
+* Permitir acceso externo a empresas para carga de documentos.
+* Proveer reportes operativos, regulatorios y analíticos.
+* Reemplazar el sistema previo basado en Microsoft Access.
+
+El sistema está diseñado bajo principios:
+
+* ISO 9000
+* Trazabilidad total
+* Seguridad multi‑tenant
+* Modularidad
+* Escalabilidad
+* Auditoría completa
+
+2. Modelo de Negocio y Procesos
+2.1. Procesos principales
+* Alta y gestión de personas
+* Alta y gestión de empresas
+* Carga documental (interna y externa)
+* Revisión y aprobación documental
+* Rechazo con motivo
+* Recalculo de estados
+* Generación de habilitaciones
+* Gestión de alertas
+* Dashboard y reportes
+
+2.2. Flujo documental
+* Empresa carga documento → PENDIENTE_EMPRESA
+* Consultora revisa → PENDIENTE_REVISION
+* Responsable aprueba → APROBADO
+* Responsable rechaza → RECHAZADO
+* Sistema marca vencidos → VENCIDO
+
+2.3. Acceso empresa externa
+* Ver solo sus personas
+* Ver solo sus documentos
+* Cargar documentos
+* Ver estado de habilitaciones
+* Ver alertas propias
+* Descargar reportes propios
+
+3. Modelo de Datos
+3.1. Entidades principales
+* Persona
+* Empresa
+* Documento
+* Estado
+* Habilitación
+* Alerta
+* Usuario
+* Rol
+* Auditoría
+
+3.2. Relaciones clave
+* Empresa 1‑N Personas
+* Persona 1‑N Documentos
+* Persona 1‑N Estados
+* Persona 1‑N Habilitaciones
+* Persona 1‑N Alertas
+* Usuario N‑1 Empresa (solo rol EMPRESA)
+
+3.3. Estados de documento
+Código
+* PENDIENTE_EMPRESA
+* PENDIENTE_REVISION
+* APROBADO
+* RECHAZADO
+* VENCIDO
+
+4. API (OpenAPI) y Endpoints
+4.1. Estructura de rutas
+Código
+* /auth
+* /personas
+* /empresas
+* /documentos
+* /estados
+* /habilitaciones
+* /alertas
+* /dashboard
+* /reportes
+* /empresa/*   ← acceso externo
+
+4.2. Endpoints críticos
+Personas
+* GET /personas
+* POST /personas
+* GET /personas/{id}
+* PATCH /personas/{id}
+
+Documentos
+* POST /documentos
+* POST /documentos/{id}/aprobar
+* POST /documentos/{id}/rechazar
+
+Empresa externa
+* GET /empresa/personas
+* POST /empresa/documentos
+
+5. Arquitectura Técnica
+5.1. Backend
+* FastAPI
+* SQLAlchemy 2.0
+* Alembic
+* JWT
+* RBAC
+* Repository + Service Pattern
+
+5.2. Frontend
+* HTML + Bootstrap 5
+* JS modular (fetch)
+* Tokens en localStorage
+* Roles en UI
+
+5.3. Infraestructura
+* Docker
+* PostgreSQL
+* Nginx (opcional)
+
+6. Seguridad, Roles y Acceso Empresa Externa
+6.1. Roles
+* ADMIN_CONSULTORA
+* RESPONSABLE_HABILITACIONES
+* OPERADOR_CONSULTORA
+* EMPRESA
+* AUDITOR
+
+6.2. Aislamiento empresa
+* Filtro automático por empresa_id
+* Rutas dedicadas /empresa/*
+* No accede a datos de otras empresas
+
+6.3. Auditoría
+Registra:
+* Usuario
+* Acción
+* Fecha/hora
+* IP
+* Resultado
+
+7. UI: Vistas, Flujos y Componentes
+7.1. Pantallas principales
+* Login
+* Dashboard
+* Personas
+* Persona detalle
+* Empresas
+* Documentos
+* Habilitaciones
+* Alertas
+* Reportes
+
+7.2. Componentes Bootstrap
+* Navbar
+* Sidebar
+* Cards KPI
+* Tablas
+* Formularios
+* Modales
+
+7.3. Integración con API
+* fetch()
+* Wrapper api.js
+* Manejo de tokens
+* Manejo de roles
+
+8. Testing y QA
+8.1. Tipos de pruebas
+* Unitarias
+* Integración
+* Funcionales
+* UI (Cypress/Playwright)
+* Seguridad
+* Performance
+
+8.2. QA documental
+* Validación de flujos
+* Validación de estados
+* Validación de habilitaciones
+
+9. Migración Access → Webapp
+9.1. Fases
+* Extracción
+* Transformación
+* Carga
+* Validación
+* Paralelismo
+* Corte
+
+9.2. Validaciones
+* Conteo por tabla
+* Conteo por empresa
+* Conteo por jurisdicción
+* Vigencias
+* Estados
+* Documentos faltantes
+
+10. Plan de Proyecto (Sprints, Entregables, Hitos)
+10.1. Sprints (8 semanas)
+* Infraestructura
+* Modelo de datos
+* Seguridad
+* Personas + Empresas
+* Documentos + Aprobación
+* Estados + Habilitaciones
+* Dashboard + Reportes
+* QA + Migración
+
+10.2. Hitos
+* Proyecto inicial
+* Seguridad
+* Flujo documental
+* Motor de habilitaciones
+* Dashboard
+* Migración
+* Go‑Live
+
+11. Anexos Técnicos
+* SQLAlchemy models
+* Rutas FastAPI
+* Schemas Pydantic
+* Prototipo HTML
+* Scripts ETL
+* Diagramas de flujo
+* Diagramas entidad‑relación
