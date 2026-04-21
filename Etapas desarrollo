@@ -1,0 +1,4601 @@
+ETAPA 1 — CATÁLOGO MAESTRO DE INFORMES
+Clasificación técnica:
+Operativos (gestión interna)
+Regulatorios (autoridades)
+Analíticos (inteligencia de datos)
+
+1. INFORMES OPERATIVOS (INTERNOS)
+Objetivo: control de vigencias, estados, documentación, carga operativa.
+
+1.1. Informe de vencimientos
+Entrada: Fecha actual, rango (30/60/90 días)
+Salida: Personas con documentos próximos a vencer
+Tablas: DocCABA, DocPBA, DocPNA, Portación, CLU
+Uso: Gestión diaria
+
+1.2. Informe de documentación faltante
+Entrada: IdPersona / IdEmpresa
+Salida: Checklist de documentos faltantes por jurisdicción
+Tablas: Doc, Estados
+Uso: Control operativo
+
+1.3. Informe de estados
+Entrada: Jurisdicción, empresa, estado
+Salida: APTO / OBSERVADO / NO APTO
+Tablas: EstadosGestion, EstadosCurso, EstadosReincidencia
+Uso: Seguimiento
+
+1.4. Informe de personas observadas
+Entrada: Jurisdicción
+Salida: Motivos de observación
+Tablas: Estados*
+Uso: Corrección de errores
+
+1.5. Informe de carga operativa
+Entrada: Fecha
+Salida: Cantidad de altas, actualizaciones, habilitaciones
+Tablas: Persona, Habilitaciones
+Uso: Métricas internas
+
+1.6. Informe de alertas generadas
+Entrada: Fecha
+Salida: Avisos emitidos por mdlAvisos
+Tablas: Avisos, ActualizacionAvisos
+Uso: Auditoría interna
+
+2. INFORMES REGULATORIOS (AUTORIDADES)
+Objetivo: cumplir requisitos formales de CABA, PBA, PNA, Prefectura.
+
+2.1. Ficha CABA
+Salida: Formato oficial
+Tablas: DocCABA, Persona, Empresa
+Uso: Presentación ante GCBA
+
+2.2. Ficha PBA
+Salida: Ficha de personal, antecedentes, curso, psicofísico
+Tablas: DocPBA, Persona
+Uso: Ministerio de Seguridad PBA
+
+2.3. Ficha PNA / Prefectura
+Salida: Nota alta, prontuario, reincidencia
+Tablas: DocPrefectura
+Uso: Prefectura Naval Argentina
+
+2.4. Certificados de habilitación
+Salida: Habilitación por jurisdicción
+Tablas: Habilitaciones
+Uso: Autoridades y empresas
+
+2.5. Listado oficial de personal habilitado
+Salida: Listado completo por empresa
+Tablas: Persona, Habilitaciones
+Uso: Presentación periódica
+
+3. INFORMES ANALÍTICOS (INTELIGENCIA DE DATOS)
+Objetivo: análisis, tendencias, optimización.
+
+3.1. Tiempos de habilitación
+Entrada: Fecha inicio / fin
+Salida: Tiempo promedio por jurisdicción
+Tablas: Persona, Estados*, Habilitaciones
+Uso: KPI de eficiencia
+
+3.2. Tasa de rechazos
+Entrada: Jurisdicción
+Salida: % de observados / no aptos
+Tablas: Estados*
+
+Uso: Mejora continua
+3.3. Distribución por empresa
+Entrada: Empresa
+Salida: Cantidad de vigiladores, estados, vigencias
+Tablas: Persona, Empresa, Habilitaciones
+Uso: Gestión comercial
+
+3.4. Causas frecuentes de observación
+Entrada: Jurisdicción
+Salida: Ranking de motivos
+Tablas: Estados*
+Uso: Reducción de errores
+
+3.5. Tendencias de vencimientos
+Entrada: Mes
+Salida: Cantidad de vencimientos por tipo
+Tablas: Doc*
+Uso: Planificación operativa
+
+4. INFORMES ESPECIALES (PROCESOS BATCH)
+4.1. Partición de datos (macro particion_PsicfPBA)
+Salida: Tabla ParticionFecha2
+Uso: Reportes segmentados por fecha
+Tablas: DatosPersonal
+
+5. INFORMES DE AUDITORÍA
+5.1. Auditoría de sesiones
+Salida: Log de accesos, terminal, resultado
+Tablas: Log_Sesion
+Uso: Seguridad
+
+5.2. Auditoría de usuarios
+Salida: Cambios, bloqueos, roles
+Tablas: Usuarios, Roles
+Uso: Control interno
+
+📌 Resultado de la Etapa 1
+Catálogo maestro completo, listo para:
+Diseño de consultas SQL
+Diseño de endpoints /reportes/...
+Diseño de plantillas HTML
+Generación de PDFs
+Integración en dashboard
+
+📘 ETAPA 2 — DISEÑO DEL DASHBOARD (KPIs + Vistas + Arquitectura Técnica)
+Objetivo: definir qué debe mostrar, cómo se estructura, qué datos consume y qué endpoints lo alimentan.
+
+El dashboard será el centro operativo de la webapp.
+
+1. KPIs PRINCIPALES (NIVEL EJECUTIVO)
+Indicadores de alto impacto, visibles en la parte superior.
+
+1.1. Vencimientos próximos
+Métrica: cantidad de documentos que vencen en 30/60/90 días
+Fuente: DocCABA, DocPBA, DocPNA, Portación, CLU
+Tipo: KPI numérico + gráfico de barras
+
+1.2. Estados globales
+Métrica: APTO / OBSERVADO / NO APTO
+Fuente: EstadosGestion, EstadosCurso, EstadosReincidencia
+Tipo: gráfico de torta
+
+1.3. Personas con documentación incompleta
+Métrica: total y variación semanal
+Fuente: Doc* + checklist
+Tipo: KPI numérico
+
+1.4. Alertas activas
+Métrica: cantidad de avisos generados por mdlAvisos
+Fuente: Avisos
+Tipo: KPI numérico
+
+1.5. Habilitaciones emitidas
+Métrica: cantidad por jurisdicción
+Fuente: Habilitaciones
+Tipo: gráfico de barras
+
+2. VISTAS OPERATIVAS (NIVEL SUPERVISIÓN)
+Tablas dinámicas con filtros.
+
+2.1. Vencimientos detallados
+Columnas: Persona, Empresa, Documento, Fecha vencimiento, Jurisdicción
+Filtros: 30/60/90 días, empresa, jurisdicción
+
+2.2. Documentación faltante
+Columnas: Persona, Documento faltante, Jurisdicción
+Filtros: empresa, tipo de documento
+
+2.3. Estados por jurisdicción
+Columnas: Persona, Estado, Motivo
+Filtros: CABA, PBA, PNA, Prefectura
+
+2.4. Alertas
+Columnas: Mensaje, Fecha, Tipo, Persona
+
+Filtros: tipo de alerta
+
+3. VISTAS ANALÍTICAS (NIVEL GERENCIAL)
+Gráficos y tendencias.
+
+3.1. Tiempos de habilitación
+Gráfico: línea
+Datos: promedio por mes y jurisdicción
+
+3.2. Tasa de rechazos
+Gráfico: barras
+Datos: % observados / no aptos por jurisdicción
+
+3.3. Distribución por empresa
+Gráfico: barras horizontales
+Datos: cantidad de vigiladores por empresa
+
+3.4. Causas de observación
+Gráfico: ranking
+Datos: motivos más frecuentes
+
+4. ARQUITECTURA TÉCNICA DEL DASHBOARD
+4.1. Backend (Python – FastAPI)
+Endpoints sugeridos:
+Código
+
+GET /dashboard/vencimientos
+GET /dashboard/estados
+GET /dashboard/documentacion_faltante
+GET /dashboard/alertas
+GET /dashboard/habilitaciones
+GET /dashboard/tiempos_habilitacion
+GET /dashboard/tasa_rechazos
+GET /dashboard/distribucion_empresa
+GET /dashboard/causas_observacion
+4.2. Frontend (HTML/JS/Bootstrap o React)
+Componentes:
+
+KPI cards
+Tablas dinámicas
+Gráficos (Chart.js o ECharts)
+Filtros avanzados
+Exportación a PDF/Excel (desde backend)
+
+4.3. Base de datos
+Consultas optimizadas con:
+
+Vistas materializadas para KPIs
+Índices por fecha, jurisdicción, empresa
+Tablas particionadas si el volumen crece
+
+5. DISEÑO DE INTERFAZ (UI/UX TÉCNICO)
+Layout
+Fila 1: KPIs
+Fila 2: Gráficos operativos
+Fila 3: Tablas dinámicas
+Fila 4: Gráficos analíticos
+
+Requisitos técnicos
+Carga asíncrona (AJAX / fetch)
+Actualización automática cada X minutos
+Filtros persistentes
+Exportación desde backend
+
+Roles:
+Admin → todo
+Supervisor → operativo
+Operador → solo carga
+
+7. ENTREGABLE DE ESTA ETAPA
+Lista de KPIs
+Lista de vistas
+Lista de gráficos
+Endpoints necesarios
+Estructura del dashboard
+Requisitos técnicos
+Relación con informes
+
+📘 ETAPA 3 — MODELO DE DATOS FINAL
+Objetivo:  
+Definir la estructura definitiva de datos para la webapp:
+
+Entidades
+Relaciones
+Normalización
+Vistas SQL
+Tablas auxiliares
+Tablas de auditoría
+Tablas de estados
+Tablas regulatorias
+Tablas operativas
+
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — Data Modeling Agent
+Responsabilidad:
+Normalización
+Definición de entidades
+Relaciones 1–N / N–N
+Claves primarias y foráneas
+Índices
+Vistas materializadas
+
+Skills:
+
+SQL Skill
+Data Modeling Skill
+Normalization Skill
+Referential Integrity Skill
+
+AGENTE 2 — Domain Mapping Agent
+Responsabilidad:
+Mapear tablas Access → entidades webapp
+Eliminar redundancias
+Unificar estructuras por jurisdicción
+Definir dominios (catálogos, enums, tipos)
+
+Skills:
+
+Domain Analysis Skill
+Data Consolidation Skill
+Schema Mapping Skill
+
+AGENTE 3 — Compliance Data Agent
+Responsabilidad:
+Validar que el modelo soporte requisitos regulatorios
+Asegurar campos obligatorios por jurisdicción
+Definir estructuras para informes oficiales
+
+Skills:
+
+Compliance Skill
+Regulatory Mapping Skill
+
+AGENTE 4 — Data Quality Agent
+Responsabilidad:
+Detectar duplicados
+Definir reglas de integridad
+Definir triggers o validaciones
+Asegurar consistencia histórica
+Skills:
+Data Quality Skill
+Integrity Validation Skill
+AGENTE 5 — Documentation Agent
+Responsabilidad:
+Generar el documento técnico del modelo
+Estructurar DER, diccionario de datos, vistas
+Preparar entregable para el equipo
+
+Skills:
+Documentation Skill
+Technical Writing Skill
+
+2. MODELO DE DATOS FINAL 
+
+2.1. ENTIDADES PRINCIPALES
+PERSONA
+Representa al vigilador / técnico / CAP.
+Campos clave:
+IdPersona (PK)
+DNI
+CUIL
+Nombre
+Apellido
+FechaNacimiento
+Sexo
+EmpresaActual (FK)
+EstadoGlobal (APTO/OBSERVADO/NO APTO)
+FechaAlta
+FechaModificacion
+
+EMPRESA
+Representa la empresa de seguridad.
+
+Campos clave:
+IdEmpresa (PK)
+CUIT
+RazonSocial
+TipoEmpresa
+Jurisdiccion
+Domicilios (FK → tabla Domicilio)
+EstadoHabilitacion
+
+DOCUMENTO
+Modelo unificado para CABA, PBA, PNA, Prefectura.
+
+Campos clave:
+IdDocumento (PK)
+IdPersona (FK)
+TipoDocumento (enum)
+Jurisdiccion (enum)
+FechaPresentacion
+FechaVencimiento
+EstadoDocumento
+ArchivoPDF (ruta o blob)
+TiposDocumento (catálogo):
+DNI
+CUIL
+FichaCABA
+FichaPBA
+Psicofisico
+Curso
+Antecedentes
+Portación
+CLU
+Declaración Jurada
+Otros
+ESTADO
+Estados por jurisdicción y por tipo.
+Campos clave:
+IdEstado (PK)
+IdPersona (FK)
+Jurisdiccion
+TipoEstado (Curso, Reincidencia, Psicofisico, Morosos, etc.)
+ValorEstado
+FechaEstado
+HABILITACION
+Resultado final por jurisdicción.
+Campos clave:
+IdHabilitacion (PK)
+IdPersona (FK)
+Jurisdiccion
+NumeroCredencial
+FechaDesde
+FechaHasta
+EstadoHabilitacion
+
+ALERTA
+Generadas por el motor de avisos.
+
+Campos clave:
+
+IdAlerta (PK)
+IdPersona (FK)
+TipoAlerta
+FechaAlerta
+Mensaje
+Estado (pendiente / emitida / vencida)
+
+USUARIO / ROL / SESION
+
+USUARIO
+IdUsuario
+Usuario
+ContraseñaHash
+Activo
+Rol (FK)
+
+ROL
+IdRol
+Nombre
+Permisos
+
+SESION
+IdSesion
+IdUsuario
+Fecha
+Terminal
+Resultado
+
+2.2. ENTIDADES AUXILIARES
+DOMICILIO
+IdDomicilio
+Calle
+Numero
+Piso
+Depto
+Provincia
+Ciudad
+
+FILIATORIOS
+IdFiliatorio
+IdPersona
+EstadoCivil
+Nacionalidad
+DatosPadres
+DatosConyuge
+
+2.3. RELACIONES PRINCIPALES
+Persona 1—N Documentos
+Persona 1—N Estados
+Persona 1—N Alertas
+Persona 1—N Habilitaciones
+Empresa 1—N Personas
+Usuario 1—N Sesiones
+
+2.4. VISTAS SQL (para dashboard)
+
+vw_Vencimientos --> Documentos con vencimiento en 30/60/90 días
+vw_EstadosGlobales --> Consolidación de estados por persona
+vw_DocumentacionFaltante --> Checklist por jurisdicción
+vw_Habilitaciones --> Habilitaciones vigentes / vencidas
+vw_AlertasActivas --> Alertas pendientes
+vw_TiemposHabilitacion --> Días entre inicio y habilitación
+
+3. NORMALIZACIÓN (Niveles)
+1FN: sin valores repetidos
+2FN: claves compuestas eliminadas
+3FN: sin dependencias transitivas
+BCNF: aplicado en tablas críticas (Persona, Documento, Estado)
+
+4. ÍNDICES RECOMENDADOS
+Persona(DNI)
+Documento(IdPersona, TipoDocumento)
+Documento(FechaVencimiento)
+Estado(IdPersona, TipoEstado)
+Habilitacion(IdPersona, Jurisdiccion)
+Alerta(Estado)
+
+5. ENTREGABLE DE ESTA ETAPA
+Modelo entidad-relación (DER)
+Diccionario de datos
+Vistas SQL
+Catálogo de entidades
+Reglas de integridad
+Índices
+Normalización
+
+📘 ETAPA 4 — FLUJO MAESTRO DE LA WEBAPP
+Objetivo:  
+Definir el flujo completo de la aplicación web, desde login hasta informes, incluyendo:
+
+Procesos
+
+Navegación
+
+Endpoints
+
+Interacciones entre módulos
+
+Estados
+
+Validaciones
+
+Seguridad
+
+Integración con dashboard e informes
+
+Este flujo será la columna vertebral del desarrollo en Antigravity / VS Code con agentes IA.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — Flow Architect Agent
+Responsabilidad:
+
+Diseñar el flujo completo
+
+Definir pasos, decisiones, bifurcaciones
+
+Alinear procesos con el modelo de datos
+
+Skills:
+
+System Flow Skill
+
+Process Mapping Skill
+
+API Interaction Skill
+
+AGENTE 2 — Backend API Agent
+Responsabilidad:
+
+Definir endpoints
+
+Mapear procesos → rutas
+
+Validar entradas/salidas
+
+Integrar seguridad
+
+Skills:
+
+FastAPI Skill
+
+Validation Skill
+
+Auth Skill
+
+AGENTE 3 — Frontend Navigation Agent
+Responsabilidad:
+
+Definir navegación
+
+Estructura de pantallas
+
+Flujo UI → API
+
+Skills:
+
+UI Flow Skill
+
+Routing Skill
+
+State Management Skill
+
+AGENTE 4 — Compliance Agent
+Responsabilidad:
+
+Validar flujos regulatorios
+
+Asegurar pasos obligatorios por jurisdicción
+
+Skills:
+
+Regulatory Flow Skill
+
+Validation Skill
+
+AGENTE 5 — Data Quality Agent
+Responsabilidad:
+
+Validar consistencia en cada paso
+
+Reglas de negocio
+
+Integridad de datos
+
+Skills:
+
+Data Quality Skill
+
+Business Rules Skill
+
+2. FLUJO MAESTRO DE LA WEBAPP (ALTO NIVEL)
+Representa el funcionamiento completo del sistema.
+
+2.1. FLUJO DE INICIO (LOGIN)
+Usuario accede a /login
+
+Ingresa credenciales
+
+Backend valida:
+
+Usuario
+
+Contraseña
+
+Estado (activo/bloqueado)
+
+Registra sesión
+
+Obtiene rol
+
+Redirige a /dashboard
+
+Endpoints:
+
+POST /auth/login
+
+GET /auth/me
+
+POST /auth/logout
+
+2.2. FLUJO PRINCIPAL (DASHBOARD)
+Carga KPIs
+
+Carga gráficos
+
+Carga tablas dinámicas
+
+Filtros por empresa / jurisdicción / estado
+
+Acceso a módulos:
+
+Personas
+
+Empresas
+
+Documentación
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Informes
+
+Endpoints:
+
+/dashboard/*
+
+2.3. FLUJO DE PERSONA (ALTA → DOCUMENTACIÓN → ESTADOS → HABILITACIÓN)
+A. Alta de persona
+Usuario abre /personas/nueva
+
+Completa datos personales
+
+Asigna empresa
+
+Guarda registro
+
+Redirige a carga documental
+
+Endpoints:
+
+POST /personas
+
+GET /empresas
+
+B. Carga de documentación
+Usuario selecciona jurisdicción
+
+Carga documentos (PDF)
+
+Sistema valida:
+
+Tipo
+
+Fecha
+
+Compleción
+
+Actualiza estados parciales
+
+Marca documentación faltante
+
+Endpoints:
+
+POST /documentos
+
+GET /documentos/{persona}
+
+C. Estados
+Sistema evalúa documentación
+
+Calcula estados por jurisdicción
+
+Determina estado global
+
+Genera alertas si corresponde
+
+Endpoints:
+
+GET /estados/{persona}
+
+POST /estados/recalcular
+
+D. Habilitación
+Si estados = APTO
+
+Sistema genera habilitación
+
+Asigna vigencia
+
+Genera credencial
+
+Permite exportar PDF
+
+Endpoints:
+
+POST /habilitaciones
+
+GET /habilitaciones/{persona}
+
+2.4. FLUJO DE EMPRESA
+Alta de empresa
+
+Asignación de vigiladores
+
+Reportes por empresa
+
+Estados globales
+
+Documentación asociada
+
+Endpoints:
+
+POST /empresas
+
+GET /empresas/{id}
+
+GET /empresas/{id}/personas
+
+2.5. FLUJO DE ALERTAS (motor automático)
+Cron job ejecuta actualizar_alertas
+
+Revisa fechas de vencimiento
+
+Genera alertas
+
+Marca alertas como activas
+
+Dashboard las muestra
+
+Usuario las gestiona
+
+Endpoints:
+
+GET /alertas
+
+POST /alertas/emitir
+
+2.6. FLUJO DE INFORMES
+Operativos
+Vencimientos
+
+Documentación faltante
+
+Estados
+
+Regulatorios
+Ficha CABA
+
+Ficha PBA
+
+Ficha PNA
+
+Certificados
+
+Analíticos
+Tiempos
+
+Rechazos
+
+Tendencias
+
+Endpoints:
+
+GET /reportes/{tipo}
+
+POST /reportes/{tipo}/pdf
+
+2.7. FLUJO DE AUDITORÍA
+Registro de sesiones
+
+Registro de cambios
+
+Registro de habilitaciones
+
+Registro de alertas
+
+Endpoints:
+
+GET /auditoria/sesiones
+
+GET /auditoria/cambios
+
+3. NAVEGACIÓN DE LA WEBAPP (UI FLOW)
+Código
+/login
+  ↓
+/dashboard
+  ├── /personas
+  │      ├── /nueva
+  │      ├── /{id}
+  │      └── /{id}/documentos
+  ├── /empresas
+  ├── /documentos
+  ├── /estados
+  ├── /habilitaciones
+  ├── /alertas
+  └── /reportes
+4. VALIDACIONES CRÍTICAS
+DNI único
+
+Documentos obligatorios por jurisdicción
+
+Fechas válidas
+
+Estados consistentes
+
+Habilitación solo si APTO
+
+Roles y permisos
+
+5. ENTREGABLE DE ESTA ETAPA
+Flujo maestro completo
+
+Endpoints por proceso
+
+Navegación UI
+
+Validaciones
+
+Interacciones entre módulos
+
+Reglas de negocio
+
+
+📘 ETAPA 5 — ARQUITECTURA TÉCNICA DE LA WEBAPP
+Objetivo: definir la arquitectura completa del sistema:
+
+Backend
+
+Frontend
+
+Seguridad
+
+Infraestructura
+
+Integración
+
+Procesos batch
+
+Almacenamiento
+
+Versionado
+
+Despliegue
+
+Esta arquitectura será la base para que los agentes IA generen código consistente en Antigravity o VS Code.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — System Architect Agent
+Responsabilidad:
+
+Definir arquitectura general
+
+Seleccionar patrones
+
+Definir capas y responsabilidades
+
+Asegurar escalabilidad
+
+Skills:
+
+Architecture Design Skill
+
+Layered Design Skill
+
+Scalability Skill
+
+AGENTE 2 — Backend Architect Agent
+Responsabilidad:
+
+Definir estructura FastAPI
+
+Rutas, controladores, servicios
+
+Validación, serialización
+
+Integración con DB
+
+Skills:
+
+FastAPI Skill
+
+API Design Skill
+
+Validation Skill
+
+ORM Skill
+
+AGENTE 3 — Frontend Architect Agent
+Responsabilidad:
+
+Definir estructura UI
+
+Routing
+
+Componentes
+
+Integración con API
+
+Skills:
+
+UI Architecture Skill
+
+Component Design Skill
+
+State Management Skill
+
+AGENTE 4 — Security Architect Agent
+Responsabilidad:
+
+Autenticación
+
+Autorización
+
+Roles
+
+Tokens
+
+Auditoría
+
+Skills:
+
+Auth Skill
+
+RBAC Skill
+
+Security Hardening Skill
+
+AGENTE 5 — DevOps Agent
+Responsabilidad:
+
+Versionado
+
+Pipelines
+
+Despliegue
+
+Contenedores
+
+Monitoreo
+
+Skills:
+
+CI/CD Skill
+
+Docker Skill
+
+Deployment Skill
+
+Monitoring Skill
+
+2. ARQUITECTURA TÉCNICA (ALTO NIVEL)
+2.1. Arquitectura general (4 capas)
+Código
+[ UI / Frontend ]
+       ↓
+[ API / Backend ]
+       ↓
+[ Servicios / Lógica ]
+       ↓
+[ Base de Datos ]
+2.2. BACKEND (FastAPI)
+Patrón:
+Clean Architecture + Domain Driven Design (DDD)
+
+Estructura recomendada:
+Código
+/app
+  /api
+    /routes
+    /schemas
+  /core
+    /config
+    /security
+  /domain
+    /personas
+    /empresas
+    /documentos
+    /estados
+    /habilitaciones
+    /alertas
+  /services
+  /repositories
+  /db
+    /models
+    /session
+    /migrations
+Tecnologías:
+FastAPI
+
+SQLAlchemy
+
+Alembic
+
+Pydantic
+
+JWT
+
+2.3. FRONTEND (HTML/JS o React)
+Patrón:
+SPA (Single Page Application) o MPA con Bootstrap  
+Depende del alcance.
+
+Estructura recomendada:
+Código
+/frontend
+  /components
+  /pages
+  /services
+  /assets
+  /styles
+Tecnologías:
+React (opcional)
+
+Bootstrap
+
+Chart.js / ECharts
+
+Fetch API
+
+2.4. BASE DE DATOS
+Motor:
+PostgreSQL o SQL Server
+
+Características:
+Índices por fecha
+
+Vistas materializadas para KPIs
+
+Particiones opcionales
+
+Auditoría nativa
+
+2.5. SEGURIDAD
+Autenticación:
+JWT (access + refresh tokens)
+
+Autorización:
+RBAC (Role-Based Access Control)
+
+Roles sugeridos:
+Admin
+
+Supervisor
+
+Operador
+
+Auditor
+
+Protecciones:
+Rate limiting
+
+Hash de contraseñas (bcrypt)
+
+Auditoría de sesiones
+
+2.6. PROCESOS BATCH (CRON)
+Motor:
+Celery + Redis
+o
+
+FastAPI Background Tasks
+o
+
+Cron del servidor
+
+Procesos:
+Actualización de alertas
+
+Revisión de vencimientos
+
+Generación de informes programados
+
+Limpieza de logs
+
+2.7. INFRAESTRUCTURA
+Contenedores:
+Docker
+
+Docker Compose
+
+Despliegue:
+Azure / AWS / On-premise
+
+Nginx como reverse proxy
+
+Certbot para HTTPS
+
+Monitoreo:
+Prometheus
+
+Grafana
+
+Logs estructurados
+
+2.8. VERSIONADO
+Repositorio:
+Git (GitHub / GitLab / Azure DevOps)
+
+Ramas:
+main
+
+develop
+
+feature/*
+
+hotfix/*
+
+3. DIAGRAMA DE ARQUITECTURA (TÉCNICO)
+Código
+[ Usuario ]
+     ↓
+[ Frontend ]
+     ↓ (HTTPS)
+[ FastAPI ]
+     ↓
+[ Servicios ]
+     ↓
+[ Repositorios ]
+     ↓
+[ PostgreSQL ]
+Procesos batch:
+
+Código
+[ Cron / Celery ]
+       ↓
+[ Servicios ]
+       ↓
+[ DB ]
+4. ENTREGABLE DE ESTA ETAPA
+Arquitectura general
+
+Arquitectura backend
+
+Arquitectura frontend
+
+Seguridad
+
+Infraestructura
+
+Procesos batch
+
+Versionado
+
+Diagrama técnico
+
+* ETAPA 6 — Diseño de Endpoints (API completa, rutas, métodos, validaciones)
+
+1. Agentes y skills para esta etapa
+AGENTE 1 — API Design Agent
+Responsabilidad:
+
+Definir rutas
+
+Métodos HTTP
+
+Estructura de request/response
+
+Códigos de estado
+
+Skills:
+
+REST Design Skill
+
+FastAPI Skill
+
+Validation Skill
+
+AGENTE 2 — Domain API Agent
+Responsabilidad:
+
+Mapear procesos de negocio → endpoints
+
+Alinear con modelo de datos
+
+Garantizar coherencia entre módulos
+
+Skills:
+
+Domain Modeling Skill
+
+Business Rules Skill
+
+AGENTE 3 — Security API Agent
+Responsabilidad:
+
+Proteger rutas
+
+Aplicar roles
+
+Validar permisos
+
+Skills:
+
+Auth Skill
+
+RBAC Skill
+
+AGENTE 4 — Documentation Agent
+Responsabilidad:
+
+Generar especificación (OpenAPI)
+
+Describir parámetros y respuestas
+
+Skills:
+
+API Documentation Skill
+
+2. Diseño de endpoints (versión inicial)
+2.1. Autenticación y usuarios
+POST /auth/login
+
+Body: usuario, contraseña
+
+Respuesta: tokens, rol
+
+POST /auth/logout
+
+GET /auth/me
+
+GET /usuarios (Admin)
+
+POST /usuarios (Admin)
+
+PATCH /usuarios/{id}
+
+GET /roles
+
+2.2. Personas
+GET /personas
+
+Filtros: empresa, estado, jurisdicción
+
+GET /personas/{id}
+
+POST /personas
+
+PATCH /personas/{id}
+
+GET /personas/{id}/documentos
+
+GET /personas/{id}/estados
+
+GET /personas/{id}/habilitaciones
+
+GET /personas/{id}/alertas
+
+2.3. Empresas
+GET /empresas
+
+GET /empresas/{id}
+
+POST /empresas
+
+PATCH /empresas/{id}
+
+GET /empresas/{id}/personas
+
+GET /empresas/{id}/habilitaciones
+
+2.4. Documentos
+GET /documentos
+
+Filtros: persona, tipo, jurisdicción, estado
+
+GET /documentos/{id}
+
+POST /documentos
+
+Body: IdPersona, TipoDocumento, Jurisdiccion, fechas, metadata
+
+Archivo: upload (endpoint aparte o mismo)
+
+PATCH /documentos/{id}
+
+GET /documentos/{id}/archivo (descarga)
+
+2.5. Estados
+GET /estados
+
+Filtros: persona, jurisdicción, tipo
+
+GET /estados/{id}
+
+POST /estados/recalcular
+
+Body: IdPersona (o lote)
+
+2.6. Habilitaciones
+GET /habilitaciones
+
+Filtros: persona, empresa, jurisdicción, estado
+
+GET /habilitaciones/{id}
+
+POST /habilitaciones
+
+Body: IdPersona, Jurisdiccion
+
+PATCH /habilitaciones/{id}
+
+GET /habilitaciones/{id}/certificado (PDF)
+
+2.7. Alertas
+GET /alertas
+
+Filtros: persona, estado, tipo
+
+POST /alertas/emitir (opcional, si hay emisión manual)
+
+POST /alertas/recalcular
+
+Usado por proceso batch
+
+2.8. Dashboard
+GET /dashboard/vencimientos
+
+GET /dashboard/estados
+
+GET /dashboard/documentacion_faltante
+
+GET /dashboard/alertas
+
+GET /dashboard/habilitaciones
+
+GET /dashboard/tiempos_habilitacion
+
+GET /dashboard/tasa_rechazos
+
+GET /dashboard/distribucion_empresa
+
+GET /dashboard/causas_observacion
+
+2.9. Reportes
+GET /reportes/{tipo}
+
+tipo: vencimientos, faltantes, estados, empresa, etc.
+
+Respuesta: JSON (para UI)
+
+POST /reportes/{tipo}/pdf
+
+Body: parámetros de filtro
+
+Respuesta: PDF
+
+2.10. Auditoría
+GET /auditoria/sesiones
+
+GET /auditoria/cambios
+
+3. Validaciones generales
+Todos los POST y PATCH → Pydantic schemas
+
+Manejo de errores estándar (422, 400, 401, 403, 404)
+
+Paginación en GET masivos
+
+Filtros por query params
+
+4. Entregable de esta etapa
+Lista de endpoints
+
+Métodos HTTP
+
+Parámetros principales
+
+Relación con procesos de negocio
+
+Base para OpenAPI/Swagger
+
+📘 ESPECIFICACIÓN OPENAPI — VERSIÓN INICIAL (v1.0)
+Nota: Esta es la estructura base.
+En etapas posteriores se expanden schemas, ejemplos y validaciones.
+
+yaml
+openapi: 3.1.0
+info:
+  title: Sistema de Habilitaciones
+  version: 1.0.0
+  description: API para gestión de habilitaciones, documentación, estados y reportes.
+
+servers:
+  - url: https://api.habilitaciones.com
+    description: Producción
+  - url: http://localhost:8000
+    description: Desarrollo
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    LoginRequest:
+      type: object
+      properties:
+        usuario:
+          type: string
+        contraseña:
+          type: string
+      required: [usuario, contraseña]
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        rol:
+          type: string
+
+    Persona:
+      type: object
+      properties:
+        id:
+          type: integer
+        dni:
+          type: string
+        cuil:
+          type: string
+        nombre:
+          type: string
+        apellido:
+          type: string
+        empresa_id:
+          type: integer
+        estado_global:
+          type: string
+
+    Empresa:
+      type: object
+      properties:
+        id:
+          type: integer
+        cuit:
+          type: string
+        razon_social:
+          type: string
+        jurisdiccion:
+          type: string
+
+    Documento:
+      type: object
+      properties:
+        id:
+          type: integer
+        persona_id:
+          type: integer
+        tipo:
+          type: string
+        jurisdiccion:
+          type: string
+        fecha_presentacion:
+          type: string
+          format: date
+        fecha_vencimiento:
+          type: string
+          format: date
+        estado:
+          type: string
+
+    Estado:
+      type: object
+      properties:
+        id:
+          type: integer
+        persona_id:
+          type: integer
+        tipo:
+          type: string
+        jurisdiccion:
+          type: string
+        valor:
+          type: string
+        fecha:
+          type: string
+          format: date
+
+    Habilitacion:
+      type: object
+      properties:
+        id:
+          type: integer
+        persona_id:
+          type: integer
+        jurisdiccion:
+          type: string
+        numero_credencial:
+          type: string
+        fecha_desde:
+          type: string
+          format: date
+        fecha_hasta:
+          type: string
+          format: date
+        estado:
+          type: string
+
+    Alerta:
+      type: object
+      properties:
+        id:
+          type: integer
+        persona_id:
+          type: integer
+        tipo:
+          type: string
+        fecha:
+          type: string
+          format: date
+        mensaje:
+          type: string
+        estado:
+          type: string
+
+security:
+  - BearerAuth: []
+📘 PATHS (ENDPOINTS)
+A continuación, la estructura base de rutas.
+
+1. Autenticación
+yaml
+paths:
+  /auth/login:
+    post:
+      summary: Login de usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Tokens generados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+2. Personas
+yaml
+  /personas:
+    get:
+      summary: Listar personas
+      parameters:
+        - in: query
+          name: empresa
+          schema:
+            type: integer
+        - in: query
+          name: estado
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de personas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Persona'
+
+    post:
+      summary: Crear persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Persona'
+      responses:
+        '201':
+          description: Persona creada
+3. Empresas
+yaml
+  /empresas:
+    get:
+      summary: Listar empresas
+      responses:
+        '200':
+          description: OK
+
+    post:
+      summary: Crear empresa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Empresa'
+      responses:
+        '201':
+          description: Empresa creada
+4. Documentos
+yaml
+  /documentos:
+    get:
+      summary: Listar documentos
+      parameters:
+        - in: query
+          name: persona
+          schema:
+            type: integer
+        - in: query
+          name: tipo
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de documentos
+
+    post:
+      summary: Crear documento
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Documento'
+      responses:
+        '201':
+          description: Documento creado
+5. Estados
+yaml
+  /estados/recalcular:
+    post:
+      summary: Recalcular estados de una persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                persona_id:
+                  type: integer
+      responses:
+        '200':
+          description: Estados recalculados
+6. Habilitaciones
+yaml
+  /habilitaciones:
+    post:
+      summary: Generar habilitación
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Habilitacion'
+      responses:
+        '201':
+          description: Habilitación generada
+7. Alertas
+yaml
+  /alertas:
+    get:
+      summary: Listar alertas
+      responses:
+        '200':
+          description: OK
+
+  /alertas/recalcular:
+    post:
+      summary: Recalcular alertas
+      responses:
+        '200':
+          description: Alertas recalculadas
+8. Dashboard
+yaml
+  /dashboard/vencimientos:
+    get:
+      summary: KPI de vencimientos
+      responses:
+        '200':
+          description: OK
+(Se repite para cada KPI)
+
+9. Reportes
+yaml
+  /reportes/{tipo}:
+    get:
+      summary: Obtener reporte en JSON
+      parameters:
+        - in: path
+          name: tipo
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reporte generado
+
+  /reportes/{tipo}/pdf:
+    post:
+      summary: Generar PDF del reporte
+      responses:
+        '200':
+          description: PDF generado
+📘 ENTREGABLE DE ESTA ETAPA
+OpenAPI base
+
+Schemas principales
+
+Paths iniciales
+
+Seguridad definida
+
+Estructura lista para expansión
+
+ETAPA 7 — Diseño de Vistas HTML / UI (componentes, pantallas, navegación)
+
+1. Agentes y skills para esta etapa
+AGENTE 1 — UI Architect Agent
+
+Rol: definir estructura de pantallas y navegación.
+
+Skills: UI Architecture Skill, Routing Skill, UX Flow Skill.
+
+AGENTE 2 — Component Design Agent
+
+Rol: definir componentes reutilizables (formularios, tablas, cards, modales).
+
+Skills: Component Design Skill, Form Design Skill, Table/Grid Skill.
+
+AGENTE 3 — API Integration UI Agent
+
+Rol: conectar UI ↔ API (OpenAPI).
+
+Skills: API Integration Skill, State Management Skill.
+
+AGENTE 4 — Security UI Agent
+
+Rol: aplicar visibilidad por rol (Admin/Supervisor/Operador).
+
+Skills: RBAC UI Skill, Guard/Route Protection Skill.
+
+2. Layout general de la webapp
+Header: logo, usuario, rol, logout.
+
+Sidebar:
+
+Dashboard
+
+Personas
+
+Empresas
+
+Documentos
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Reportes
+
+Auditoría
+
+Main content: vista activa.
+
+Framework sugerido: Bootstrap + plantilla tipo AdminLTE o React con layout similar.
+
+3. Vistas principales
+3.1. Login (/login)
+Componentes:
+
+FormLogin (usuario, contraseña)
+
+Mensaje de error
+
+Acción: POST /auth/login
+
+Resultado: guarda tokens, redirige a /dashboard.
+
+3.2. Dashboard (/dashboard)
+Componentes:
+
+KpiCard (vencimientos, estados, faltantes, alertas, habilitaciones)
+
+ChartVencimientos
+
+ChartEstados
+
+ChartRechazos
+
+TablaAlertasResumen
+
+Acciones:
+
+GET /dashboard/*
+
+3.3. Personas
+Lista (/personas)
+
+Tabla con: DNI, Nombre, Empresa, Estado, Jurisdicciones.
+
+Filtros: empresa, estado, jurisdicción.
+
+Acciones: Ver, Editar, Documentos, Habilitaciones.
+
+Detalle (/personas/{id})
+
+Tabs:
+
+Datos personales
+
+Documentos
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Cada tab consume su endpoint (/documentos, /estados, etc.).
+
+Alta (/personas/nueva)
+
+Formulario dividido en secciones:
+
+Datos básicos
+
+Empresa
+
+Filiatorios (opcional)
+
+3.4. Empresas
+Lista (/empresas)
+
+Tabla: CUIT, Razón social, Jurisdicción, Cant. personas.
+
+Detalle (/empresas/{id})
+
+Tabs:
+
+Datos empresa
+
+Personas
+
+Habilitaciones
+
+3.5. Documentos
+Vista por persona (tab en persona)
+
+Tabla: Tipo, Jurisdicción, F. presentación, F. vencimiento, Estado.
+
+Botón: “Subir / reemplazar PDF”.
+
+Acción: POST /documentos, GET /documentos?persona=....
+
+3.6. Habilitaciones
+Vista por persona (tab)
+
+Tabla: Jurisdicción, N° credencial, Desde, Hasta, Estado.
+
+Botón: “Generar habilitación” → POST /habilitaciones.
+
+Botón: “Ver certificado” → descarga PDF.
+
+3.7. Alertas
+Lista (/alertas)
+
+Tabla: Persona, Tipo, Mensaje, Fecha, Estado.
+
+Filtros: tipo, estado.
+
+Relación directa con dashboard.
+
+3.8. Reportes (/reportes)
+Selector de tipo de reporte (operativo / regulatorio / analítico).
+
+Filtros (empresa, jurisdicción, rango de fechas).
+
+Botón: “Ver en pantalla” → GET /reportes/{tipo}.
+
+Botón: “Exportar PDF” → POST /reportes/{tipo}/pdf.
+
+4. Integración UI ↔ API
+Cada vista usa un service JS/TS:
+
+personasService, empresasService, documentosService, etc.
+
+Cada service se basa en la especificación OpenAPI.
+
+Manejo centralizado de:
+
+tokens
+
+errores
+
+loading states.
+
+5. Seguridad en UI
+Rutas protegidas según rol:
+
+Admin: todo.
+
+Supervisor: dashboard, personas, empresas, reportes.
+
+Operador: personas, documentos.
+
+Auditor: auditoría, reportes.
+
+Guardas de ruta: si no hay token → /login.
+
+6. Entregable de esta etapa
+Mapa de vistas
+
+Componentes principales
+
+Navegación
+
+Relación UI ↔ API
+
+Reglas de visibilidad por rol
+
+
+ETAPA 8 — TESTING, QA Y MIGRACIÓN ACCESS → WEBAPP
+Esta etapa asegura:
+
+calidad funcional
+
+calidad de datos
+
+calidad de procesos
+
+continuidad operativa
+
+migración sin interrupciones
+
+1. AGENTES Y SKILLS PARA ESTA ETAPA
+AGENTE 1 — QA Functional Agent
+Responsabilidad:
+
+Pruebas funcionales de UI y API
+
+Validación de flujos completos
+
+Detección de errores de negocio
+
+Skills:
+
+Functional Testing Skill
+
+Test Case Design Skill
+
+API Testing Skill
+
+AGENTE 2 — QA Automation Agent
+Responsabilidad:
+
+Generar tests automáticos
+
+Integración con CI/CD
+
+Validación continua
+
+Skills:
+
+Pytest Skill
+
+API Automation Skill
+
+Regression Testing Skill
+
+AGENTE 3 — Data Migration Agent
+Responsabilidad:
+
+Extraer datos de Access
+
+Transformar a modelo SQL
+
+Validar integridad
+
+Cargar en la nueva base
+
+Skills:
+
+ETL Skill
+
+Data Mapping Skill
+
+Data Quality Skill
+
+AGENTE 4 — Data Validation Agent
+Responsabilidad:
+
+Comparar datos Access vs Webapp
+
+Validar conteos, estados, vigencias
+
+Detectar inconsistencias
+
+Skills:
+
+Data Reconciliation Skill
+
+Integrity Check Skill
+
+AGENTE 5 — UAT Agent (User Acceptance Testing)
+Responsabilidad:
+
+Validar con usuarios reales
+
+Confirmar que los procesos cumplen requisitos
+
+Documentar feedback
+
+Skills:
+
+UAT Skill
+
+Scenario Testing Skill
+
+2. TESTING — ESTRUCTURA TÉCNICA
+2.1. Testing de API (FastAPI)
+Pruebas obligatorias:
+Autenticación
+
+Roles y permisos
+
+CRUD de personas
+
+CRUD de empresas
+
+Documentos (incluye upload)
+
+Estados (recalcular)
+
+Habilitaciones
+
+Alertas
+
+Dashboard
+
+Reportes
+
+Herramientas:
+Pytest
+
+HTTPX
+
+OpenAPI como base de generación
+
+2.2. Testing de UI
+Pruebas:
+Navegación
+
+Formularios
+
+Validaciones
+
+Filtros
+
+Tablas dinámicas
+
+Gráficos
+
+Descarga de PDF
+
+Herramientas:
+Playwright o Cypress
+
+2.3. Testing de seguridad
+JWT
+
+Expiración de tokens
+
+Acceso por rol
+
+Protección de rutas
+
+Auditoría de sesiones
+
+2.4. Testing de rendimiento
+Carga de dashboard
+
+Consultas masivas
+
+Generación de reportes
+
+Procesos batch
+
+3. MIGRACIÓN ACCESS → WEBAPP
+3.1. Fases de migración
+Fase 1 — Extracción
+Exportar tablas Access a CSV/Excel
+
+Exportar documentos (PDF)
+
+Exportar logs si existen
+
+Fase 2 — Transformación
+Normalizar datos
+
+Unificar estructuras por jurisdicción
+
+Resolver duplicados
+
+Resolver inconsistencias
+
+Mapear a modelo SQL final
+
+Fase 3 — Carga
+Cargar empresas
+
+Cargar personas
+
+Cargar documentos
+
+Cargar estados
+
+Cargar habilitaciones
+
+Cargar alertas
+
+Fase 4 — Validación
+Conteo por tabla
+
+Conteo por empresa
+
+Conteo por jurisdicción
+
+Validación de vigencias
+
+Validación de estados
+
+Validación de documentos faltantes
+
+Fase 5 — Paralelismo
+Access sigue funcionando
+
+Webapp en modo “lectura”
+
+Comparación en paralelo
+
+Fase 6 — Corte
+Congelar Access
+
+Activar Webapp en modo completo
+
+Validación final
+
+4. CHECKLIST DE MIGRACIÓN
+Datos
+Personas
+
+Empresas
+
+Documentos
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Auditoría
+
+Procesos
+Recalcular estados
+
+Recalcular alertas
+
+Regenerar habilitaciones
+
+UI
+Validar vistas
+
+Validar filtros
+
+Validar reportes
+
+API
+Validar endpoints críticos
+
+5. ESTRATEGIA DE CORTE (CUTOVER)
+Opción recomendada: “Big Bang controlado”
+Migración completa
+
+Validación
+
+Corte
+
+Activación
+
+Opción alternativa: “Migración progresiva”
+Personas por empresa
+
+Jurisdicciones por lote
+
+Documentos por tipo
+
+6. ENTREGABLE DE ESTA ETAPA
+Plan de testing
+
+Plan de QA
+
+Plan de migración
+
+Checklist de validación
+
+Estrategia de corte
+
+Roles de agentes
+
+📘 ETAPA 10 — Estructura del Proyecto (Repositorio + Módulos + Convenciones)
+Objetivo: definir cómo se organiza el proyecto completo, para que:
+
+el equipo humano
+los agentes IA
+las herramientas de desarrollo
+puedan trabajar de forma modular, ordenada y escalable.
+
+Esta etapa es el puente entre el diseño y el código.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — Repository Architect Agent
+Responsabilidad:
+
+Definir estructura de carpetas
+Definir módulos
+Definir convenciones de nombres
+Asegurar modularidad
+
+Skills:
+Repository Design Skill
+Modular Architecture Skill
+
+AGENTE 2 — Backend Setup Agent
+Responsabilidad:
+Crear estructura base FastAPI
+Configuración inicial
+Integración con OpenAPI
+
+Skills:
+
+FastAPI Setup Skill
+Config Management Skill
+
+AGENTE 3 — Frontend Setup Agent
+Responsabilidad:
+Crear estructura base UI
+Layout, componentes, servicios
+Integración con API
+
+Skills:
+
+UI Setup Skill
+Component Architecture Skill
+
+AGENTE 4 — DevOps Setup Agent
+Responsabilidad:
+Configurar entorno
+Docker
+Variables de entorno
+Scripts de arranque
+
+Skills:
+
+Environment Setup Skill
+Containerization Skill
+
+2. ESTRUCTURA DEL REPOSITORIO (PROPUESTA PROFESIONAL)
+Código
+/habilitaciones-app
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── routes/
+│   │   │   ├── schemas/
+│   │   │   └── dependencies/
+│   │   ├── core/
+│   │   ├── domain/
+│   │   │   ├── personas/
+│   │   │   ├── empresas/
+│   │   │   ├── documentos/
+│   │   │   ├── estados/
+│   │   │   ├── habilitaciones/
+│   │   │   └── alertas/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── db/
+│   │   │   ├── models/
+│   │   │   ├── migrations/
+│   │   │   └── session.py
+│   │   └── main.py
+│   └── tests/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── hooks/
+│   │   └── styles/
+│   └── package.json
+│
+├── docs/
+│   ├── 01_modelo_datos.md
+│   ├── 02_openapi.yaml
+│   ├── 03_ui_vistas.md
+│   ├── 04_seguridad_roles.md
+│   ├── 05_migracion_testing.md
+│   └── walkthrough_completo.md
+│
+├── docker/
+│   ├── backend.Dockerfile
+│   ├── frontend.Dockerfile
+│   └── docker-compose.yml
+│
+└── README.md
+
+3. CONVENCIONES DE NOMBRES
+Backend
+Rutas: snake_case
+Modelos: PascalCase
+Carpetas: lowercase
+Schemas Pydantic: PascalCase + Schema
+Servicios: nombre_service.py
+
+Frontend
+Componentes: PascalCase.jsx
+Hooks: useNombre.js
+Servicios API: nombreService.js
+
+4. MÓDULOS DEL BACKEND (DETALLE)
+/api/routes
+Endpoints organizados por dominio
+Cada archivo = un módulo
+personas.py
+empresas.py
+documentos.py
+estados.py
+habilitaciones.py
+alertas.py
+dashboard.py
+reportes.py
+auth.py
+
+/domain
+
+Lógica de negocio por módulo
+
+Cada módulo tiene:
+
+service.py
+repository.py
+validators.py
+workflow.py (si aplica)
+/db/models
+SQLAlchemy models
+Relación directa con el modelo de datos definido
+/services
+Servicios transversales
+Email
+PDF
+Alertas
+Seguridad
+
+5. MÓDULOS DEL FRONTEND (DETALLE)
+/pages
+Pantallas completas
+Login
+Dashboard
+Personas
+Empresas
+Documentos
+Estados
+Habilitaciones
+Alertas
+Reportes
+
+/components
+Componentes reutilizables
+Tablas
+Formularios
+Cards
+Modales
+Gráficos
+
+/services
+Conexión con API
+Basado en OpenAPI
+Manejo de tokens
+
+6. ARCHIVOS CRÍTICOS
+README.md
+Debe incluir:
+
+Cómo levantar backend
+Cómo levantar frontend
+Cómo correr tests
+Cómo migrar datos
+Cómo usar agentes IA con este repositorio
+docker-compose.yml
+Backend
+Frontend
+Base de datos
+Redis (si se usa para tareas)
+
+7. ENTREGABLE DE ESTA ETAPA
+Estructura del repositorio
+
+Módulos backend
+Módulos frontend
+Convenciones
+Carpetas de documentación
+Base para iniciar desarrollo real
+
+📘 ETAPA 10 — IMPLEMENTACIÓN BASE (BACKEND + UI + PLAN DE PROYECTO)
+Esta etapa define cómo se baja el diseño a código real, manteniendo modularidad, escalabilidad y compatibilidad con agentes IA.
+
+🔹 ETAPA 10.1 — Bajar modelo de datos → SQLAlchemy
+Agentes
+Data Modeling Agent
+Backend Setup Agent
+Repository Architect Agent
+
+Skills
+SQLAlchemy Modeling Skill
+ORM Mapping Skill
+Referential Integrity Skill
+
+Objetivo
+Convertir el modelo de datos (Etapa 3) en modelos SQLAlchemy, organizados por dominio.
+
+Estructura propuesta
+Código
+backend/app/db/models/
+    persona.py
+    empresa.py
+    documento.py
+    estado.py
+    habilitacion.py
+    alerta.py
+    usuario.py
+    rol.py
+    auditoria.py
+Decisiones técnicas
+Usar SQLAlchemy 2.0 (declarative mapping moderno).
+Usar UUID o BIGINT autoincremental para PK (según tu preferencia actual: BIGINT).
+Relaciones 1‑N y N‑1 explícitas.
+
+Estados de documento como Enum.
+Timestamps automáticos (created_at, updated_at).
+Integración con Alembic para migraciones.
+
+🔹 ETAPA 10.2 — Bajar OpenAPI → código FastAPI
+Agentes
+API Design Agent
+Backend Setup Agent
+Security Architect Agent
+
+Skills
+FastAPI Routing Skill
+Pydantic Schema Skill
+OpenAPI Integration Skill
+
+Objetivo
+Convertir la especificación OpenAPI (Etapa 6) en:
+
+Rutas
+Schemas Pydantic
+Controladores
+Dependencias
+Seguridad JWT
+RBAC por rol
+Estructura
+Código
+backend/app/api/routes/
+    auth.py
+    personas.py
+    empresas.py
+    documentos.py
+    estados.py
+    habilitaciones.py
+    alertas.py
+    dashboard.py
+    reportes.py
+    empresa_externo.py   ← acceso remoto
+Decisiones técnicas
+Cada endpoint se implementa como función FastAPI con Depends.
+
+Schemas Pydantic se generan desde OpenAPI.
+
+Seguridad:
+JWT access + refresh
+Roles: Admin, Responsable, Operador, Empresa, Auditor
+Multi‑tenant:
+Usuario empresa solo accede a /empresa/*
+Filtros automáticos por empresa_id
+
+🔹 ETAPA 10.3 — Primer prototipo UI (HTML/Bootstrap)
+Agentes
+UI Architect Agent
+Component Design Agent
+API Integration UI Agent
+
+Skills
+Bootstrap Layout Skill
+Component Reuse Skill
+UI Routing Skill
+Objetivo
+Crear un prototipo funcional sin lógica compleja, solo estructura visual.
+
+Estructura
+Código
+frontend/
+    index.html
+    login.html
+    dashboard.html
+    personas.html
+    persona_detalle.html
+    empresas.html
+    documentos.html
+    habilitaciones.html
+    alertas.html
+    reportes.html
+Componentes Bootstrap
+Navbar
+Sidebar
+Cards para KPIs
+Tablas responsive
+Formularios
+Modales para carga de documentos
+Alertas visuales
+Decisiones técnicas
+Prototipo estático (HTML + Bootstrap 5).
+Luego se conecta a API con JS (fetch).
+Diseño pensado para migrar fácilmente a React si lo deseás.
+
+🔹 ETAPA 10.4 — Plan de proyecto (sprints, entregables, hitos)
+Agentes
+Project Planning Agent
+DevOps Setup Agent
+Skills
+Sprint Planning Skill
+Deliverable Structuring Skill
+Milestone Definition Skill
+
+Objetivo
+Definir un plan de trabajo realista, modular y ejecutable.
+
+Plan propuesto (8 semanas)
+Sprint 1 — Infraestructura + Repositorio
+Crear repositorio
+Crear estructura backend
+Crear estructura frontend
+Configurar Docker
+Configurar base de datos
+Entregable: proyecto vacío pero estructurado
+
+Sprint 2 — Modelo de datos SQLAlchemy
+Implementar modelos
+Crear migraciones Alembic
+Crear seeds básicos
+Entregable: DB funcional
+
+Sprint 3 — Autenticación + Roles + Seguridad
+JWT
+Roles
+Auditoría
+Usuarios empresa
+Entregable: login + seguridad completa
+
+Sprint 4 — Personas + Empresas
+Endpoints
+UI básica
+Validaciones
+Entregable: CRUD completo
+
+Sprint 5 — Documentos + Flujo de aprobación
+Carga empresa
+Revisión consultora
+Estados documento
+Entregable: workflow completo
+
+Sprint 6 — Estados + Habilitaciones
+Recalcular estados
+Generar habilitación
+PDF
+Entregable: habilitaciones operativas
+
+Sprint 7 — Dashboard + Reportes
+KPIs
+Gráficos
+Reportes PDF
+Entregable: dashboard completo
+
+Sprint 8 — QA + Migración Access
+ETL
+Validación
+Paralelismo
+Corte
+Entregable: sistema listo para producción
+
+📌 ENTREGABLE DE ESTA ETAPA
+Estructura SQLAlchemy
+Estructura FastAPI
+Prototipo UI
+Plan de proyecto completo
+
+
+📘 ETAPA 11 — Implementación Backend (SQLAlchemy Models)
+Objetivo:  
+Transformar el modelo de datos (Etapa 3) en modelos SQLAlchemy 2.0, organizados por dominio, con claves primarias, relaciones, enums, timestamps y consistencia referencial.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — ORM Modeling Agent
+Responsabilidad:
+
+Crear modelos SQLAlchemy
+
+Definir relaciones
+
+Definir enums
+
+Definir constraints
+
+Skills:
+
+SQLAlchemy Modeling Skill
+
+ORM Relationship Skill
+
+AGENTE 2 — Domain Mapping Agent
+Responsabilidad:
+
+Mapear entidades del modelo conceptual → ORM
+
+Asegurar consistencia con OpenAPI y endpoints
+
+Skills:
+
+Domain Modeling Skill
+
+Schema Mapping Skill
+
+AGENTE 3 — Backend Setup Agent
+Responsabilidad:
+
+Estructurar carpetas
+
+Integrar modelos con Alembic
+
+Preparar Base y SessionLocal
+
+Skills:
+
+FastAPI Setup Skill
+
+DB Integration Skill
+
+2. ESTRUCTURA DE CARPETAS (BACKEND)
+Código
+backend/app/db/
+    ├── models/
+    │     ├── persona.py
+    │     ├── empresa.py
+    │     ├── documento.py
+    │     ├── estado.py
+    │     ├── habilitacion.py
+    │     ├── alerta.py
+    │     ├── usuario.py
+    │     ├── rol.py
+    │     └── auditoria.py
+    ├── base.py
+    ├── session.py
+    └── migrations/
+
+3. DECISIONES TÉCNICAS (SQLAlchemy 2.0)
+✔ Declarative Base moderna
+python
+from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass
+✔ PK: BIGINT autoincremental
+python
+id = mapped_column(BigInteger, primary_key=True, index=True)
+✔ Relaciones 1‑N y N‑1
+python
+personas = relationship("Persona", back_populates="empresa")
+✔ Enums para estados
+python
+class EstadoDocumentoEnum(enum.Enum):
+    PENDIENTE_EMPRESA = "PENDIENTE_EMPRESA"
+    PENDIENTE_REVISION = "PENDIENTE_REVISION"
+    APROBADO = "APROBADO"
+    RECHAZADO = "RECHAZADO"
+    VENCIDO = "VENCIDO"
+✔ Timestamps automáticos
+python
+created_at = mapped_column(DateTime, default=datetime.utcnow)
+updated_at = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+4. MODELOS SQLALCHEMY (VERSIÓN BASE)
+(Código real, limpio, profesional. Listo para usar.)
+
+4.1. Empresa
+python
+# empresa.py
+from sqlalchemy import String, BigInteger
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class Empresa(Base):
+    __tablename__ = "empresas"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
+    cuit: Mapped[str] = mapped_column(String(11), unique=True, nullable=False)
+    razon_social: Mapped[str] = mapped_column(String(255), nullable=False)
+    jurisdiccion: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    personas: Mapped[list["Persona"]] = relationship("Persona", back_populates="empresa")
+4.2. Persona
+python
+# persona.py
+from sqlalchemy import String, BigInteger, ForeignKey, Date
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class Persona(Base):
+    __tablename__ = "personas"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
+    dni: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    cuil: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    apellido: Mapped[str] = mapped_column(String(100), nullable=False)
+
+    empresa_id: Mapped[int] = mapped_column(ForeignKey("empresas.id"))
+    empresa: Mapped["Empresa"] = relationship("Empresa", back_populates="personas")
+
+    documentos: Mapped[list["Documento"]] = relationship("Documento", back_populates="persona")
+    estados: Mapped[list["Estado"]] = relationship("Estado", back_populates="persona")
+    habilitaciones: Mapped[list["Habilitacion"]] = relationship("Habilitacion", back_populates="persona")
+    alertas: Mapped[list["Alerta"]] = relationship("Alerta", back_populates="persona")
+4.3. Documento
+python
+# documento.py
+import enum
+from sqlalchemy import String, BigInteger, Date, Enum, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class EstadoDocumentoEnum(enum.Enum):
+    PENDIENTE_EMPRESA = "PENDIENTE_EMPRESA"
+    PENDIENTE_REVISION = "PENDIENTE_REVISION"
+    APROBADO = "APROBADO"
+    RECHAZADO = "RECHAZADO"
+    VENCIDO = "VENCIDO"
+
+class Documento(Base):
+    __tablename__ = "documentos"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"))
+    tipo: Mapped[str] = mapped_column(String(100), nullable=False)
+    jurisdiccion: Mapped[str] = mapped_column(String(50), nullable=False)
+    fecha_presentacion: Mapped[Date] = mapped_column(Date)
+    fecha_vencimiento: Mapped[Date] = mapped_column(Date)
+    estado: Mapped[EstadoDocumentoEnum] = mapped_column(Enum(EstadoDocumentoEnum), default=EstadoDocumentoEnum.PENDIENTE_EMPRESA)
+
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="documentos")
+4.4. Estado
+python
+# estado.py
+from sqlalchemy import String, BigInteger, Date, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class Estado(Base):
+    __tablename__ = "estados"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"))
+    tipo: Mapped[str] = mapped_column(String(100))
+    jurisdiccion: Mapped[str] = mapped_column(String(50))
+    valor: Mapped[str] = mapped_column(String(50))
+    fecha: Mapped[Date] = mapped_column(Date)
+
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="estados")
+4.5. Habilitación
+python
+# habilitacion.py
+from sqlalchemy import String, BigInteger, Date, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class Habilitacion(Base):
+    __tablename__ = "habilitaciones"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"))
+    jurisdiccion: Mapped[str] = mapped_column(String(50))
+    numero_credencial: Mapped[str] = mapped_column(String(100))
+    fecha_desde: Mapped[Date] = mapped_column(Date)
+    fecha_hasta: Mapped[Date] = mapped_column(Date)
+    estado: Mapped[str] = mapped_column(String(50))
+
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="habilitaciones")
+4.6. Alerta
+python
+# alerta.py
+from sqlalchemy import String, BigInteger, Date, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, Mapped
+from app.db.base import Base
+
+class Alerta(Base):
+    __tablename__ = "alertas"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    persona_id: Mapped[int] = mapped_column(ForeignKey("personas.id"))
+    tipo: Mapped[str] = mapped_column(String(100))
+    fecha: Mapped[Date] = mapped_column(Date)
+    mensaje: Mapped[str] = mapped_column(String(500))
+    estado: Mapped[str] = mapped_column(String(50))
+
+    persona: Mapped["Persona"] = relationship("Persona", back_populates="alertas")
+5. ENTREGABLE DE ESTA ETAPA
+✔ Modelos SQLAlchemy completos
+✔ Relaciones definidas
+✔ Enums implementados
+✔ Estructura de carpetas lista
+✔ Base para Alembic
+✔ Base para endpoints FastAPI
+
+
+📘 ETAPA 12 — Implementación Backend (FastAPI: Rutas + Schemas + Controladores)
+Objetivo
+Transformar la especificación OpenAPI (Etapa 6) en:
+
+Schemas Pydantic
+
+Rutas FastAPI
+
+Controladores (endpoints)
+
+Dependencias (auth, roles, empresa)
+
+Integración con modelos SQLAlchemy (Etapa 11)
+
+Estructura modular por dominio
+
+Sin lógica compleja todavía: solo estructura base + endpoints vacíos.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — API Scaffolding Agent
+Responsabilidad:
+
+Crear rutas FastAPI según OpenAPI
+
+Crear controladores vacíos
+
+Crear dependencias base
+
+Skills:
+
+FastAPI Routing Skill
+
+OpenAPI Mapping Skill
+
+AGENTE 2 — Schema Builder Agent
+Responsabilidad:
+
+Crear schemas Pydantic
+
+Mapear modelos SQLAlchemy → Pydantic
+
+Definir validaciones
+
+Skills:
+
+Pydantic Modeling Skill
+
+Data Validation Skill
+
+AGENTE 3 — Security Integration Agent
+Responsabilidad:
+
+Integrar JWT
+
+Integrar RBAC
+
+Crear dependencias get_current_user y require_role
+
+Aislamiento empresa
+
+Skills:
+
+Auth Skill
+
+RBAC Skill
+
+Tenant Isolation Skill
+
+AGENTE 4 — Domain API Agent
+Responsabilidad:
+
+Alinear rutas con modelo de datos
+
+Asegurar consistencia entre módulos
+
+Skills:
+
+Domain Mapping Skill
+
+Business Rules Skill
+
+2. ESTRUCTURA DE CARPETAS (BACKEND API)
+Código
+backend/app/api/
+    ├── routes/
+    │     ├── auth.py
+    │     ├── personas.py
+    │     ├── empresas.py
+    │     ├── documentos.py
+    │     ├── estados.py
+    │     ├── habilitaciones.py
+    │     ├── alertas.py
+    │     ├── dashboard.py
+    │     ├── reportes.py
+    │     └── empresa_externo.py
+    │
+    ├── schemas/
+    │     ├── auth.py
+    │     ├── persona.py
+    │     ├── empresa.py
+    │     ├── documento.py
+    │     ├── estado.py
+    │     ├── habilitacion.py
+    │     ├── alerta.py
+    │     └── usuario.py
+    │
+    └── dependencies/
+          ├── auth.py
+          ├── roles.py
+          └── empresa.py
+3. SCHEMAS Pydantic (BASE)
+(Versión inicial, sin lógica compleja)
+
+3.1. Persona
+python
+# schemas/persona.py
+from pydantic import BaseModel
+from typing import Optional
+
+class PersonaBase(BaseModel):
+    dni: str
+    cuil: str
+    nombre: str
+    apellido: str
+    empresa_id: Optional[int]
+
+class PersonaCreate(PersonaBase):
+    pass
+
+class PersonaUpdate(BaseModel):
+    nombre: Optional[str]
+    apellido: Optional[str]
+
+class PersonaOut(PersonaBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+3.2. Empresa
+python
+# schemas/empresa.py
+from pydantic import BaseModel
+
+class EmpresaBase(BaseModel):
+    cuit: str
+    razon_social: str
+    jurisdiccion: str
+
+class EmpresaCreate(EmpresaBase):
+    pass
+
+class EmpresaOut(EmpresaBase):
+    id: int
+
+    class Config:
+        from_attributes = True
+3.3. Documento
+python
+# schemas/documento.py
+from pydantic import BaseModel
+from datetime import date
+from typing import Optional
+from app.db.models.documento import EstadoDocumentoEnum
+
+class DocumentoBase(BaseModel):
+    persona_id: int
+    tipo: str
+    jurisdiccion: str
+    fecha_presentacion: Optional[date]
+    fecha_vencimiento: Optional[date]
+
+class DocumentoCreate(DocumentoBase):
+    pass
+
+class DocumentoOut(DocumentoBase):
+    id: int
+    estado: EstadoDocumentoEnum
+
+    class Config:
+        from_attributes = True
+4. RUTAS FASTAPI (BASE)
+(Controladores vacíos, listos para implementar lógica en Etapa 13)
+
+4.1. Personas
+python
+# routes/personas.py
+from fastapi import APIRouter, Depends
+from app.api.schemas.persona import PersonaCreate, PersonaOut
+
+router = APIRouter(prefix="/personas", tags=["Personas"])
+
+@router.get("/", response_model=list[PersonaOut])
+def listar_personas():
+    return []
+
+@router.post("/", response_model=PersonaOut)
+def crear_persona(data: PersonaCreate):
+    return {}
+4.2. Empresas
+python
+# routes/empresas.py
+from fastapi import APIRouter
+from app.api.schemas.empresa import EmpresaCreate, EmpresaOut
+
+router = APIRouter(prefix="/empresas", tags=["Empresas"])
+
+@router.get("/", response_model=list[EmpresaOut])
+def listar_empresas():
+    return []
+
+@router.post("/", response_model=EmpresaOut)
+def crear_empresa(data: EmpresaCreate):
+    return {}
+4.3. Documentos
+python
+# routes/documentos.py
+from fastapi import APIRouter
+from app.api.schemas.documento import DocumentoCreate, DocumentoOut
+
+router = APIRouter(prefix="/documentos", tags=["Documentos"])
+
+@router.get("/", response_model=list[DocumentoOut])
+def listar_documentos():
+    return []
+
+@router.post("/", response_model=DocumentoOut)
+def crear_documento(data: DocumentoCreate):
+    return {}
+4.4. Acceso empresa (externo)
+python
+# routes/empresa_externo.py
+from fastapi import APIRouter, Depends
+from app.api.schemas.documento import DocumentoCreate, DocumentoOut
+
+router = APIRouter(prefix="/empresa", tags=["Empresa Externa"])
+
+@router.get("/personas")
+def personas_empresa():
+    return []
+
+@router.post("/documentos", response_model=DocumentoOut)
+def cargar_documento_empresa(data: DocumentoCreate):
+    return {}
+5. DEPENDENCIAS (AUTH + ROLES)
+
+5.1. JWT básico
+python
+# dependencies/auth.py
+from fastapi import Depends, HTTPException
+
+def get_current_user():
+    # se implementa en Etapa 13
+    return {"id": 1, "rol": "ADMIN"}
+
+5.2. Roles
+python
+# dependencies/roles.py
+from fastapi import Depends, HTTPException
+from app.api.dependencies.auth import get_current_user
+
+def require_role(*roles):
+    def wrapper(user=Depends(get_current_user)):
+        if user["rol"] not in roles:
+            raise HTTPException(status_code=403, detail="No autorizado")
+        return user
+    return wrapper
+
+6. ENTREGABLE DE ESTA ETAPA
+✔ Schemas Pydantic base
+✔ Rutas FastAPI base
+✔ Controladores vacíos
+✔ Dependencias de auth y roles
+✔ Estructura modular completa
+
+
+📘 ETAPA 13 — Implementación de Lógica Real (CRUD + Servicios + Repositorios)
+Objetivo
+Construir la lógica real del backend:
+
+Repositorios (SQLAlchemy)
+
+Servicios (reglas de negocio)
+
+CRUD completo
+
+Validaciones
+
+Flujo de aprobación de documentos
+
+Aislamiento empresa
+
+Integración con seguridad (JWT + roles)
+
+Sin UI todavía.
+Sin reportes todavía.
+Sin dashboard todavía.
+Solo backend funcional y sólido.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — Repository Agent
+Responsabilidad:
+
+Implementar repositorios SQLAlchemy
+
+Consultas complejas
+
+Filtros
+
+Paginación
+
+Skills:
+
+ORM Query Skill
+
+Repository Pattern Skill
+
+AGENTE 2 — Service Logic Agent
+Responsabilidad:
+
+Implementar reglas de negocio
+
+Validaciones
+
+Workflow de documentos
+
+Recalcular estados
+
+Generar habilitaciones
+
+Skills:
+
+Business Logic Skill
+
+Workflow Skill
+
+Validation Skill
+
+AGENTE 3 — Security Enforcement Agent
+Responsabilidad:
+
+Aplicar roles
+
+Aislamiento empresa
+
+Validar permisos en cada endpoint
+
+Skills:
+
+RBAC Enforcement Skill
+
+Tenant Isolation Skill
+
+AGENTE 4 — API Integration Agent
+Responsabilidad:
+
+Conectar rutas → servicios → repositorios
+
+Manejo de errores
+
+Respuestas consistentes
+
+Skills:
+
+FastAPI Integration Skill
+
+Error Handling Skill
+
+2. ESTRUCTURA DE CÓDIGO (BACKEND)
+Código
+backend/app/
+    ├── api/
+    │     ├── routes/
+    │     ├── schemas/
+    │     └── dependencies/
+    ├── domain/
+    │     ├── personas/
+    │     │      ├── repository.py
+    │     │      ├── service.py
+    │     │      └── validators.py
+    │     ├── empresas/
+    │     ├── documentos/
+    │     ├── estados/
+    │     ├── habilitaciones/
+    │     └── alertas/
+    ├── db/
+    │     ├── models/
+    │     ├── base.py
+    │     └── session.py
+    └── core/
+          ├── security.py
+          ├── config.py
+          └── exceptions.py
+3. IMPLEMENTACIÓN REAL (CONCEPTUAL + EJEMPLOS)
+(No pongo TODO el código completo para no saturar, pero sí la estructura exacta que se implementa.)
+
+3.1. REPOSITORIOS (SQLAlchemy)
+Ejemplo: Personas
+python
+# domain/personas/repository.py
+from sqlalchemy.orm import Session
+from app.db.models.persona import Persona
+
+class PersonaRepository:
+
+    def get_all(self, db: Session):
+        return db.query(Persona).all()
+
+    def get_by_id(self, db: Session, id: int):
+        return db.query(Persona).filter(Persona.id == id).first()
+
+    def create(self, db: Session, data):
+        persona = Persona(**data.dict())
+        db.add(persona)
+        db.commit()
+        db.refresh(persona)
+        return persona
+
+    def update(self, db: Session, persona, data):
+        for field, value in data.dict(exclude_unset=True).items():
+            setattr(persona, field, value)
+        db.commit()
+        db.refresh(persona)
+        return persona
+3.2. SERVICIOS (REGLAS DE NEGOCIO)
+Ejemplo: Personas
+python
+# domain/personas/service.py
+from sqlalchemy.orm import Session
+from .repository import PersonaRepository
+from .validators import validar_persona
+
+class PersonaService:
+
+    def __init__(self):
+        self.repo = PersonaRepository()
+
+    def crear_persona(self, db: Session, data):
+        validar_persona(data)
+        return self.repo.create(db, data)
+
+    def listar(self, db: Session):
+        return self.repo.get_all(db)
+3.3. VALIDADORES
+python
+# domain/personas/validators.py
+from fastapi import HTTPException
+
+def validar_persona(data):
+    if len(data.nombre) < 2:
+        raise HTTPException(400, "Nombre demasiado corto")
+3.4. RUTAS (INTEGRACIÓN REAL)
+python
+# api/routes/personas.py
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from app.api.schemas.persona import PersonaCreate, PersonaOut
+from app.api.dependencies.db import get_db
+from app.domain.personas.service import PersonaService
+
+router = APIRouter(prefix="/personas", tags=["Personas"])
+service = PersonaService()
+
+@router.get("/", response_model=list[PersonaOut])
+def listar_personas(db: Session = Depends(get_db)):
+    return service.listar(db)
+
+@router.post("/", response_model=PersonaOut)
+def crear_persona(data: PersonaCreate, db: Session = Depends(get_db)):
+    return service.crear_persona(db, data)
+4. FLUJO DE APROBACIÓN DE DOCUMENTOS (LÓGICA REAL)
+Estados:
+PENDIENTE_EMPRESA
+
+PENDIENTE_REVISION
+
+APROBADO
+
+RECHAZADO
+
+VENCIDO
+
+Flujo:
+python
+# domain/documentos/service.py
+
+def cargar_documento_empresa(db, data, usuario_empresa):
+    data.estado = EstadoDocumentoEnum.PENDIENTE_EMPRESA
+    data.persona_id debe pertenecer a empresa del usuario
+    repo.create()
+
+def aprobar_documento(db, id, usuario_responsable):
+    doc = repo.get(id)
+    doc.estado = APROBADO
+    repo.save()
+
+def rechazar_documento(db, id, motivo):
+    doc.estado = RECHAZADO
+    doc.motivo_rechazo = motivo
+5. AISLAMIENTO EMPRESA (MULTI‑TENANT)
+Dependencia:
+python
+# api/dependencies/empresa.py
+def require_empresa_user(user=Depends(get_current_user)):
+    if user["rol"] != "EMPRESA":
+        raise HTTPException(403)
+    return user
+Aplicación:
+python
+@router.get("/personas")
+def personas_empresa(
+    user = Depends(require_empresa_user),
+    db: Session = Depends(get_db)
+):
+    return repo.get_by_empresa(db, user["empresa_id"])
+6. ENTREGABLE DE ESTA ETAPA
+✔ Repositorios SQLAlchemy
+✔ Servicios con reglas de negocio
+✔ Validadores
+✔ Rutas conectadas a servicios
+✔ Flujo de aprobación de documentos
+✔ Aislamiento empresa
+✔ Seguridad aplicada a endpoints
+✔ Backend funcional (sin UI todavía)
+
+📘 ETAPA 14 — Prototipo UI (HTML/Bootstrap)
+Objetivo:  
+Construir un prototipo navegable, estático, modular y limpio, que represente:
+
+Layout general
+
+Navegación
+
+Pantallas principales
+
+Componentes reutilizables
+
+Formularios base
+
+Tablas base
+
+Modales base
+
+Sin lógica de negocio todavía.
+Sin conexión a API todavía.
+Sin estilos avanzados todavía.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — UI Architect Agent
+Responsabilidad:
+
+Definir layout general
+
+Definir estructura de navegación
+
+Definir plantillas base
+
+Skills:
+
+UI Architecture Skill
+
+Layout Design Skill
+
+AGENTE 2 — Component Design Agent
+Responsabilidad:
+
+Crear componentes Bootstrap reutilizables
+
+Formularios, tablas, modales, cards
+
+Skills:
+
+Component Reuse Skill
+
+Form Design Skill
+
+Table/Grid Skill
+
+AGENTE 3 — Navigation Flow Agent
+Responsabilidad:
+
+Definir rutas HTML
+
+Flujo de navegación
+
+Coherencia entre pantallas
+
+Skills:
+
+UX Flow Skill
+
+Routing Skill
+
+AGENTE 4 — UI Integration Agent
+Responsabilidad:
+
+Preparar estructura para futura integración con API
+
+Definir contenedores para JS
+
+Skills:
+
+API Integration Prep Skill
+
+DOM Structure Skill
+
+2. ESTRUCTURA DEL PROTOTIPO UI
+Código
+frontend/
+    ├── index.html
+    ├── login.html
+    ├── dashboard.html
+    ├── personas.html
+    ├── persona_detalle.html
+    ├── empresas.html
+    ├── documentos.html
+    ├── habilitaciones.html
+    ├── alertas.html
+    ├── reportes.html
+    ├── css/
+    │     └── styles.css
+    └── js/
+          └── app.js
+3. LAYOUT GENERAL (Bootstrap 5)
+Componentes base:
+Navbar superior
+
+Logo
+
+Usuario
+
+Rol
+
+Logout
+
+Sidebar
+
+Dashboard
+
+Personas
+
+Empresas
+
+Documentos
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Reportes
+
+Main content
+
+Contenedor dinámico para cada vista
+
+4. PANTALLAS DEL PROTOTIPO
+A continuación, defino qué contiene cada pantalla, sin código todavía (eso viene en Etapa 15 si vos lo pedís).
+
+4.1. login.html
+Card centrada
+
+Formulario:
+
+Usuario
+
+Contraseña
+
+Botón “Ingresar”
+
+Placeholder para errores
+
+4.2. dashboard.html
+Cards con KPIs:
+
+Documentos vencidos
+
+Documentos por vencer
+
+Estados por jurisdicción
+
+Habilitaciones activas
+
+Alertas activas
+
+Gráficos:
+
+Vencimientos (barras)
+
+Estados (torta)
+
+Rechazos (línea)
+
+Tabla:
+
+Últimas alertas
+
+4.3. personas.html
+Tabla:
+
+DNI
+
+Nombre
+
+Empresa
+
+Estado global
+
+Acciones (Ver / Editar / Documentos / Habilitaciones)
+
+Filtros:
+
+Empresa
+
+Estado
+
+Jurisdicción
+
+Botón “Nueva persona”
+
+4.4. persona_detalle.html
+Tabs:
+
+Datos personales
+
+Documentos
+
+Estados
+
+Habilitaciones
+
+Alertas
+
+Cada tab con su tabla base.
+
+4.5. empresas.html
+Tabla:
+
+CUIT
+
+Razón social
+
+Jurisdicción
+
+Cantidad de personas
+
+Botón “Nueva empresa”
+
+4.6. documentos.html
+Tabla:
+
+Tipo
+
+Jurisdicción
+
+Fecha presentación
+
+Fecha vencimiento
+
+Estado
+
+Acciones (Ver / Reemplazar / Aprobar / Rechazar)
+
+Modal:
+
+Subir documento
+
+Seleccionar tipo
+
+Seleccionar persona
+
+4.7. habilitaciones.html
+Tabla:
+
+Jurisdicción
+
+N° credencial
+
+Desde
+
+Hasta
+
+Estado
+
+Acciones (Ver PDF)
+
+4.8. alertas.html
+Tabla:
+
+Persona
+
+Tipo
+
+Fecha
+
+Mensaje
+
+Estado
+
+Filtros:
+
+Tipo
+
+Estado
+
+4.9. reportes.html
+Selector de tipo de reporte
+
+Filtros
+
+Botón “Ver en pantalla”
+
+Botón “Exportar PDF”
+
+Tabla con resultados
+
+5. COMPONENTES REUTILIZABLES
+5.1. Tabla estándar
+Responsive
+
+Hover
+
+Botones de acción
+
+Placeholder “sin datos”
+
+5.2. Formulario estándar
+Inputs con labels
+
+Validaciones visuales
+
+Layout en columnas
+
+5.3. Modal estándar
+Header
+
+Body
+
+Footer con botones
+
+5.4. Card KPI
+Color
+
+Icono
+
+Valor
+
+Descripción
+
+6. PREPARACIÓN PARA INTEGRACIÓN CON API
+Cada pantalla incluye:
+
+<div id="data-container"> para JS
+
+<script src="js/app.js"></script>
+
+IDs y clases pensadas para fetch()
+
+Ejemplo:
+
+html
+<tbody id="tabla-personas-body"></tbody>
+7. ENTREGABLE DE ESTA ETAPA
+✔ Estructura completa del prototipo UI
+✔ Pantallas definidas
+✔ Componentes definidos
+✔ Navegación definida
+✔ Preparado para integración con API
+✔ Base para Etapa 15 (código HTML real)
+
+📘 ETAPA 15 — Prototipo UI (HTML/Bootstrap) — CÓDIGO REAL
+Objetivo
+Generar el código HTML base de:
+
+Layout general
+
+Navbar
+
+Sidebar
+
+Contenedor principal
+
+Pantallas principales
+
+Componentes reutilizables
+
+Todo modular, escalable y preparado para integrar JS en la Etapa 16.
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — UI Markup Agent
+Responsabilidad:
+
+Generar HTML limpio
+
+Estructura Bootstrap
+
+Layout base
+
+Skills:
+
+HTML Architecture Skill
+
+Bootstrap Layout Skill
+
+AGENTE 2 — Component Builder Agent
+Responsabilidad:
+
+Crear componentes reutilizables
+
+Tablas, formularios, modales, cards
+
+Skills:
+
+Component Reuse Skill
+
+Form Design Skill
+
+AGENTE 3 — Navigation Agent
+Responsabilidad:
+
+Crear navegación entre pantallas
+
+Sidebar + links
+
+Breadcrumbs
+
+Skills:
+
+Navigation Flow Skill
+
+AGENTE 4 — Integration Prep Agent
+Responsabilidad:
+
+Preparar IDs y hooks para JS
+
+Estructura para fetch() futuro
+
+Skills:
+
+DOM Integration Skill
+
+2. LAYOUT BASE (layout.html)
+Este archivo se reutiliza en todas las pantallas.
+
+html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Habilitaciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body class="d-flex">
+
+    <!-- SIDEBAR -->
+    <nav class="bg-dark text-white p-3 vh-100" style="width: 250px;">
+        <h4 class="mb-4">Habilitaciones</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link text-white">Dashboard</a></li>
+            <li class="nav-item"><a href="personas.html" class="nav-link text-white">Personas</a></li>
+            <li class="nav-item"><a href="empresas.html" class="nav-link text-white">Empresas</a></li>
+            <li class="nav-item"><a href="documentos.html" class="nav-link text-white">Documentos</a></li>
+            <li class="nav-item"><a href="habilitaciones.html" class="nav-link text-white">Habilitaciones</a></li>
+            <li class="nav-item"><a href="alertas.html" class="nav-link text-white">Alertas</a></li>
+            <li class="nav-item"><a href="reportes.html" class="nav-link text-white">Reportes</a></li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-grow-1 p-4" id="main-content">
+        <!-- Aquí se inyecta el contenido de cada pantalla -->
+        {{content}}
+    </div>
+
+</body>
+</html>
+3. LOGIN (login.html)
+html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Habilitaciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+
+<div class="card shadow p-4" style="width: 350px;">
+    <h4 class="text-center mb-3">Iniciar sesión</h4>
+
+    <form>
+        <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="usuario">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="password">
+        </div>
+
+        <button type="button" class="btn btn-primary w-100">Ingresar</button>
+    </form>
+
+    <div id="login-error" class="text-danger mt-3 text-center"></div>
+</div>
+
+</body>
+</html>
+4. DASHBOARD (dashboard.html)
+Usa el layout base.
+
+html
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="content">
+        <h2 class="mb-4">Dashboard</h2>
+
+        <!-- KPIs -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-white bg-primary p-3">
+                    <h5>Documentos vencidos</h5>
+                    <h2 id="kpi-vencidos">0</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-warning p-3">
+                    <h5>Por vencer</h5>
+                    <h2 id="kpi-por-vencer">0</h2>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-white bg-success p-3">
+                    <h5>Habilitaciones activas</h5>
+                    <h2 id="kpi-habilitaciones">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5>Vencimientos</h5>
+                    <canvas id="chartVencimientos"></canvas>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5>Estados</h5>
+                    <canvas id="chartEstados"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+5. PERSONAS (personas.html)
+html
+<h2 class="mb-4">Personas</h2>
+
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <select class="form-select d-inline-block w-auto">
+            <option>Empresa</option>
+        </select>
+
+        <select class="form-select d-inline-block w-auto">
+            <option>Estado</option>
+        </select>
+    </div>
+
+    <a href="persona_detalle.html" class="btn btn-primary">Nueva persona</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>DNI</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tabla-personas-body">
+        <!-- JS insertará filas -->
+    </tbody>
+</table>
+6. DOCUMENTOS (documentos.html)
+html
+<h2 class="mb-4">Documentos</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Persona</th>
+            <th>Tipo</th>
+            <th>Jurisdicción</th>
+            <th>Presentación</th>
+            <th>Vencimiento</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="tabla-documentos-body"></tbody>
+</table>
+
+<!-- Modal subir documento -->
+<div class="modal fade" id="modalDocumento" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir documento</h5>
+            </div>
+            <div class="modal-body">
+                <input type="file" class="form-control mb-3">
+                <select class="form-select mb-3">
+                    <option>Tipo de documento</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary">Subir</button>
+            </div>
+        </div>
+    </div>
+</div>
+7. ENTREGABLE DE ESTA ETAPA
+✔ Layout general (HTML real)
+✔ Login
+✔ Dashboard
+✔ Personas
+✔ Documentos
+✔ Componentes Bootstrap
+✔ Modales
+✔ Estructura lista para integrar JS y API
+
+
+📘 ETAPA 16 — Integración UI con API (fetch, tokens, roles, empresa externa)
+Objetivo
+Conectar el prototipo HTML/Bootstrap (Etapa 15) con el backend FastAPI (Etapas 11–13), implementando:
+
+Autenticación real
+
+Guardado de tokens
+
+Llamadas a endpoints
+
+Render dinámico de tablas
+
+Formularios que envían datos
+
+Aislamiento empresa
+
+Roles en UI
+
+Manejo de errores
+
+1. AGENTES PARA ESTA ETAPA
+AGENTE 1 — API Integration Agent
+Responsabilidad:
+
+Implementar fetch()
+
+Manejo de tokens
+
+Manejo de errores
+
+Integración con endpoints
+
+Skills:
+
+API Integration Skill
+
+Token Handling Skill
+
+AGENTE 2 — UI Logic Agent
+Responsabilidad:
+
+Render dinámico de tablas
+
+Actualización de DOM
+
+Formularios → API
+
+Skills:
+
+DOM Manipulation Skill
+
+Form Submission Skill
+
+AGENTE 3 — Security UI Agent
+Responsabilidad:
+
+Guardar tokens
+
+Verificar expiración
+
+Redirigir si no hay sesión
+
+Ocultar/mostrar elementos según rol
+
+Skills:
+
+RBAC UI Skill
+
+Session Management Skill
+
+AGENTE 4 — Empresa External Flow Agent
+Responsabilidad:
+
+Implementar /empresa/*
+
+Aislamiento empresa
+
+Carga de documentos externa
+
+Skills:
+
+Tenant Isolation Skill
+
+External User Flow Skill
+
+2. ESTRUCTURA DE ARCHIVOS JS
+Código
+frontend/js/
+    app.js                ← inicialización global
+    auth.js               ← login, tokens, roles
+    api.js                ← wrapper fetch()
+    personas.js           ← lógica de personas
+    documentos.js         ← lógica de documentos
+    empresas.js
+    habilitaciones.js
+    alertas.js
+    reportes.js
+3. AUTENTICACIÓN (auth.js)
+Objetivo:
+
+Enviar usuario/contraseña
+
+Guardar token
+
+Guardar rol
+
+Redirigir a dashboard
+
+Código real (base):
+javascript
+// auth.js
+
+async function login() {
+    const usuario = document.getElementById("usuario").value;
+    const password = document.getElementById("password").value;
+
+    const resp = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({usuario, contraseña: password})
+    });
+
+    if (!resp.ok) {
+        document.getElementById("login-error").innerText = "Credenciales inválidas";
+        return;
+    }
+
+    const data = await resp.json();
+
+    localStorage.setItem("token", data.access_token);
+    localStorage.setItem("rol", data.rol);
+
+    window.location.href = "dashboard.html";
+}
+En login.html:
+html
+<button type="button" class="btn btn-primary w-100" onclick="login()">Ingresar</button>
+<script src="js/auth.js"></script>
+4. WRAPPER FETCH GLOBAL (api.js)
+Evita repetir código en cada pantalla.
+
+javascript
+// api.js
+
+async function apiGet(url) {
+    const token = localStorage.getItem("token");
+
+    const resp = await fetch(url, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    if (resp.status === 401) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    return resp.json();
+}
+
+async function apiPost(url, data) {
+    const token = localStorage.getItem("token");
+
+    const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    });
+
+    return resp.json();
+}
+5. CARGA DE PERSONAS (personas.js)
+Conexión real a /personas.
+
+javascript
+// personas.js
+
+async function cargarPersonas() {
+    const personas = await apiGet("http://localhost:8000/personas");
+
+    const tbody = document.getElementById("tabla-personas-body");
+    tbody.innerHTML = "";
+
+    personas.forEach(p => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${p.dni}</td>
+                <td>${p.nombre} ${p.apellido}</td>
+                <td>${p.empresa_id}</td>
+                <td>${p.estado_global ?? "-"}</td>
+                <td>
+                    <a href="persona_detalle.html?id=${p.id}" class="btn btn-sm btn-primary">Ver</a>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+window.onload = cargarPersonas;
+6. CARGA DE DOCUMENTOS (documentos.js)
+Conexión real a /documentos.
+
+javascript
+// documentos.js
+
+async function cargarDocumentos() {
+    const docs = await apiGet("http://localhost:8000/documentos");
+
+    const tbody = document.getElementById("tabla-documentos-body");
+    tbody.innerHTML = "";
+
+    docs.forEach(d => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${d.persona_id}</td>
+                <td>${d.tipo}</td>
+                <td>${d.jurisdiccion}</td>
+                <td>${d.fecha_presentacion ?? "-"}</td>
+                <td>${d.fecha_vencimiento ?? "-"}</td>
+                <td>${d.estado}</td>
+                <td>
+                    <button class="btn btn-sm btn-secondary">Ver</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+window.onload = cargarDocumentos;
+7. FLUJO EMPRESA EXTERNA (empresa_externa.js)
+Conexión a /empresa/personas y /empresa/documentos.
+
+javascript
+// empresa_externa.js
+
+async function cargarPersonasEmpresa() {
+    const personas = await apiGet("http://localhost:8000/empresa/personas");
+
+    const tbody = document.getElementById("tabla-personas-body");
+    tbody.innerHTML = "";
+
+    personas.forEach(p => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${p.dni}</td>
+                <td>${p.nombre} ${p.apellido}</td>
+                <td>${p.estado_global ?? "-"}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="abrirModal(${p.id})">Subir documento</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+8. MANEJO DE ROLES EN UI
+javascript
+// app.js
+
+function aplicarRoles() {
+    const rol = localStorage.getItem("rol");
+
+    if (rol === "EMPRESA") {
+        document.querySelector("a[href='empresas.html']").style.display = "none";
+        document.querySelector("a[href='alertas.html']").style.display = "none";
+        document.querySelector("a[href='reportes.html']").style.display = "none";
+    }
+}
+
+window.onload = aplicarRoles;
+9. ENTREGABLE DE ESTA ETAPA
+✔ Autenticación real en UI
+✔ Tokens guardados en localStorage
+✔ Wrapper fetch global
+✔ Tablas dinámicas conectadas a API
+✔ Formularios que envían datos
+✔ Flujo empresa externa funcionando
+✔ Roles aplicados en UI
+✔ Manejo de errores y expiración de sesión
+
+
+📘 ETAPA 17 — Plan de Proyecto (Sprints, Entregables, Hitos)
+Objetivo
+Definir un plan completo, con:
+
+Sprints
+
+Alcance por sprint
+
+Entregables
+
+Hitos
+
+Criterios de aceptación
+
+Riesgos y mitigaciones
+
+Participación de agentes IA
+
+Este plan está optimizado para un desarrollo ágil, modular, iterativo y compatible con IA asistida.
+
+1. ESTRUCTURA GENERAL DEL PROYECTO
+Duración estimada: 8 semanas  
+Metodología: Scrum / Sprints semanales  
+Equipo:
+
+1 Líder técnico (vos)
+
+1 Backend
+
+1 Frontend
+
+1 QA
+
+Agentes IA (asistentes permanentes)
+
+2. SPRINTS (DETALLE COMPLETO)
+🟦 Sprint 1 — Infraestructura + Repositorio (Semana 1)
+Objetivo
+Dejar el proyecto listo para desarrollo.
+
+Tareas
+Crear repositorio Git
+
+Crear estructura backend (FastAPI)
+
+Crear estructura frontend (HTML/Bootstrap)
+
+Configurar Docker
+
+Configurar base de datos (PostgreSQL)
+
+Crear entorno virtual + dependencias
+
+Configurar Alembic
+
+Entregables
+Proyecto vacío pero estructurado
+
+Docker funcionando
+
+DB inicial creada
+
+Hito
+✔ “Proyecto inicial listo para desarrollo”
+
+🟩 Sprint 2 — Modelo de Datos + SQLAlchemy (Semana 2)
+Objetivo
+Implementar el modelo de datos completo.
+
+Tareas
+Crear modelos SQLAlchemy
+
+Crear migraciones Alembic
+
+Crear seeds básicos
+
+Validar integridad referencial
+
+Entregables
+DB funcional
+
+Migraciones listas
+
+Modelo de datos estable
+
+Hito
+✔ “Modelo de datos final implementado”
+
+🟧 Sprint 3 — Autenticación + Roles + Seguridad (Semana 3)
+Objetivo
+Implementar seguridad completa.
+
+Tareas
+JWT access + refresh
+
+Roles: Admin, Responsable, Operador, Empresa, Auditor
+
+Aislamiento empresa (multi‑tenant)
+
+Auditoría de acciones
+
+Endpoints /auth/*
+
+Entregables
+Login funcionando
+
+Roles aplicados
+
+Auditoría básica
+
+Hito
+✔ “Seguridad y roles operativos”
+
+🟨 Sprint 4 — Personas + Empresas (Semana 4)
+Objetivo
+CRUD completo de personas y empresas.
+
+Tareas
+Endpoints /personas
+
+Endpoints /empresas
+
+Validaciones
+
+UI: personas.html + empresas.html
+
+Integración UI ↔ API
+
+Entregables
+CRUD funcionando
+
+Tablas dinámicas en UI
+
+Hito
+✔ “Gestión de personas y empresas operativa”
+
+🟫 Sprint 5 — Documentos + Flujo de Aprobación (Semana 5)
+Objetivo
+Implementar el flujo crítico del sistema.
+
+Tareas
+Carga empresa externa
+
+Estados documento
+
+Aprobación / rechazo
+
+Notificaciones internas
+
+UI: documentos.html
+
+Modal de carga
+
+Entregables
+Flujo empresa → consultora funcionando
+
+Documentos con estados reales
+
+Hito
+✔ “Flujo documental completo”
+
+🟥 Sprint 6 — Estados + Habilitaciones (Semana 6)
+Objetivo
+Implementar lógica de negocio avanzada.
+
+Tareas
+Recalcular estados
+
+Generar habilitaciones
+
+Generar PDF
+
+UI: habilitaciones.html
+
+Entregables
+Habilitaciones operativas
+
+Estados automáticos
+
+Hito
+✔ “Motor de habilitaciones funcionando”
+
+🟪 Sprint 7 — Dashboard + Reportes (Semana 7)
+Objetivo
+Implementar analítica y reporting.
+
+Tareas
+KPIs
+
+Gráficos
+
+Reportes JSON
+
+Reportes PDF
+
+UI: dashboard.html + reportes.html
+
+Entregables
+Dashboard completo
+
+Reportes descargables
+
+Hito
+✔ “Analítica y reportes listos”
+
+🟫 Sprint 8 — QA + Migración Access → Webapp (Semana 8)
+Objetivo
+Asegurar calidad y migrar datos.
+
+Tareas
+ETL Access → PostgreSQL
+
+Validación de datos
+
+Pruebas funcionales
+
+Pruebas automatizadas
+
+Paralelismo
+
+Corte final
+
+Entregables
+Datos migrados
+
+QA completo
+
+Sistema listo para producción
+
+Hito
+✔ “Sistema listo para producción”
+
+3. HITOS GLOBALES
+Hito 1: Infraestructura lista
+
+Hito 2: Seguridad implementada
+
+Hito 3: Flujo documental completo
+
+Hito 4: Motor de habilitaciones
+
+Hito 5: Dashboard + reportes
+
+Hito 6: Migración final
+
+Hito 7: Go‑Live
+
+4. RIESGOS Y MITIGACIONES
+Riesgo	Mitigación
+Complejidad del flujo documental	Dividir en sub‑módulos + tests
+Datos inconsistentes en Access	Validación previa + reglas de limpieza
+Roles mal aplicados	Testing exhaustivo + auditoría
+UI no alineada con API	Contrato OpenAPI como fuente de verdad
+Migración fallida	Paralelismo + rollback plan
+
+
+5. PARTICIPACIÓN DE AGENTES IA
+Agentes IA intervienen en:
+Generación de código repetitivo
+
+Validaciones
+
+Documentación
+
+Testing
+
+ETL
+
+Refactorización
+
+Generación de reportes
+
+No intervienen en:
+Decisiones de negocio
+
+Aprobación documental
+
+Seguridad crítica
+
+6. ENTREGABLE DE ESTA ETAPA
+✔ Plan completo del proyecto
+✔ Sprints definidos
+✔ Entregables claros
+✔ Hitos ejecutivos
+✔ Riesgos y mitigaciones
+✔ Participación de agentes IA
+
+
+
