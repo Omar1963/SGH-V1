@@ -1,0 +1,71 @@
+# Plan_Implementacion
+# Inicialización del Proyecto: Infraestructura y Modelos de Datos SGH-V1
+
+Este plan cubre la configuración inicial del "Sistema Integral de Habilitaciones" (SGH-V1) basado en el "Documento Maestro" proporcionado. Configuraremos el entorno containerizado y los modelos de datos principales.
+
+## Revisión del Usuario Requerida
+
+> [!IMPORTANT]
+> La estructura del proyecto se creará directamente en la raíz del repositorio (`c:\Users\Admin\GitHub\SGH-V1\`). Esto incluye los directorios `backend/` y `frontend/`.
+
+## Cambios Propuestos
+
+### Infraestructura
+
+#### [NUEVO] [docker-compose.yml](file:///c:/Users/Admin/GitHub/SGH-V1/docker-compose.yml)
+Definir tres servicios:
+- `db`: Contenedor PostgreSQL 15+ con volumen persistente.
+- `backend`: Contenedor de aplicación FastAPI.
+- `frontend`: Contenedor `nginx` simple para servir archivos HTML/JS/CSS estáticos.
+
+#### [NUEVO] [.env](file:///c:/Users/Admin/GitHub/SGH-V1/.env)
+Almacenar variables de entorno para la base de datos (USER, PASSWORD, NAME) y secretos de seguridad (JWT SECRET).
+
+---
+
+### Backend
+
+#### [NUEVO] [Dockerfile](file:///c:/Users/Admin/GitHub/SGH-V1/backend/Dockerfile)
+Imagen Python 3.11, instalación de dependencias desde `requirements.txt` y punto de entrada para `uvicorn`.
+
+#### [NUEVO] [requirements.txt](file:///c:/Users/Admin/GitHub/SGH-V1/backend/requirements.txt)
+Incluir: `fastapi`, `uvicorn`, `sqlalchemy`, `alembic`, `pydantic-settings`, `psycopg2-binary` (o `asyncpg`), `python-jose`, `passlib`.
+
+#### [NUEVO] [app/main.py](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/main.py)
+Punto de entrada FastAPI inicial con rutas básicas e inyección de dependencias para la base de datos.
+
+#### [NUEVO] [app/db/models/](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/db/models/)
+Implementar las siguientes entidades usando SQLAlchemy 2.0:
+- `Persona`, `Empresa`, `Documento`, `Estado`, `Habilitacion`, `Alerta`, `Usuario`, `Auditoria`.
+
+#### [NUEVO] [app/core/config.py](file:///c:/Users/Admin/GitHub/SGH-V1/backend/app/core/config.py)
+Gestión de configuración usando `pydantic-settings`.
+
+---
+
+### Frontend
+
+#### [NUEVO] [index.html](file:///c:/Users/Admin/GitHub/SGH-V1/frontend/index.html)
+Página de inicio inicial con configuración de Bootstrap 5.
+
+#### [NUEVO] [js/api.js](file:///c:/Users/Admin/GitHub/SGH-V1/frontend/js/api.js)
+Envoltorio base para `fetch()` para manejar autenticación y respuestas estándar de API.
+
+## Preguntas Abiertas
+
+> [!IMPORTANT]
+> 1. **Jerarquía del Proyecto**: ¿Debo crear la carpeta `habilitaciones-app/` como subdirectorio (como se muestra en el README), o está cómodo con que `backend/` y `frontend/` estén en la raíz del repositorio?
+> 2. **Preferencia de ORM**: ¿Desea conexiones de base de datos asincrónicas (`asyncpg`) o sincrónicas (`psycopg2`)?
+> 3. **Credenciales de Base de Datos**: ¿Debo usar valores predeterminados genéricos por ahora, o desea proporcionar valores específicos?
+
+## Plan de Verificación
+
+### Pruebas Automatizadas
+- `docker-compose up`: Verificar que todos los contenedores se inician correctamente.
+- `curl http://localhost:8000/docs`: Verificar que la documentación de FastAPI sea accesible.
+- `alembic upgrade head`: Verificar que las migraciones de base de datos se ejecuten perfectamente.
+
+### Verificación Manual
+- Verificar la conexión de base de datos ejecutando una consulta simple a través de un script de prueba.
+- Verificar que el `index.html` del frontend se cargue correctamente a través del navegador.
+```
