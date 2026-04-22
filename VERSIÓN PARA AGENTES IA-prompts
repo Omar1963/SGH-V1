@@ -5,79 +5,79 @@ Uso: desarrollo asistido por IA, generación de código, validación, testing, d
 1. OBJETIVO DEL SISTEMA
 El sistema gestiona:
 
-Personas
-Empresas
-Documentos
-Estados
-Habilitaciones
-Alertas
-Usuarios y roles
-Acceso externo de empresas
-Flujo de aprobación documental
-Dashboard y reportes
+* Personas
+* Empresas
+* Documentos
+* Estados
+* Habilitaciones
+* Alertas
+* Usuarios y roles
+* Acceso externo de empresas
+* Flujo de aprobación documental
+* Dashboard y reportes
 
 Debe cumplir:
-Seguridad multi‑tenant
-Auditoría completa
-ISO 9000 (trazabilidad)
-Modularidad
-Escalabilidad
+* Seguridad multi‑tenant
+* Auditoría completa
+* ISO 9000 (trazabilidad)
+* Modularidad
+* Escalabilidad
 
 2. MODELO DE DATOS 
 Entidades
-Persona: id, dni, cuil, nombre, apellido, empresa_id
-Empresa: id, cuit, razon_social, jurisdiccion
-Documento: id, persona_id, tipo, jurisdiccion, fecha_presentacion, fecha_vencimiento, estado
-Estado: id, persona_id, tipo, jurisdiccion, valor, fecha
-Habilitacion: id, persona_id, jurisdiccion, numero_credencial, fecha_desde, fecha_hasta, estado
-Alerta: id, persona_id, tipo, fecha, mensaje, estado
-Usuario: id, usuario, contraseña_hash, rol, empresa_id (solo si rol=EMPRESA)
-Auditoria: id, usuario_id, accion, fecha, ip, resultado
+* Persona: id, dni, cuil, nombre, apellido, empresa_id
+* Empresa: id, cuit, razon_social, jurisdiccion
+* Documento: id, persona_id, tipo, jurisdiccion, fecha_presentacion, fecha_vencimiento, estado
+* Estado: id, persona_id, tipo, jurisdiccion, valor, fecha
+* Habilitacion: id, persona_id, jurisdiccion, numero_credencial, fecha_desde, fecha_hasta, estado
+* Alerta: id, persona_id, tipo, fecha, mensaje, estado
+  * Usuario: id, usuario, contraseña_hash, rol, empresa_id (solo si rol=EMPRESA)
+* Auditoria: id, usuario_id, accion, fecha, ip, resultado
 
 Relaciones
-Empresa 1‑N Personas
-Persona 1‑N Documentos
-Persona 1‑N Estados
-Persona 1‑N Habilitaciones
-Persona 1‑N Alertas
+* Empresa 1‑N Personas
+* Persona 1‑N Documentos
+* Persona 1‑N Estados
+* Persona 1‑N Habilitaciones
+* Persona 1‑N Alertas
 
 Enum EstadoDocumento
-Código
-PENDIENTE_EMPRESA
-PENDIENTE_REVISION
-APROBADO
-RECHAZADO
-VENCIDO
+* Código
+* PENDIENTE_EMPRESA
+* PENDIENTE_REVISION
+* APROBADO
+* RECHAZADO
+* VENCIDO
 
 3. API (RESUMEN PARA IA)
 Rutas principales
 Código
-/auth/login
-/personas
-/empresas
-/documentos
-/documentos/{id}/aprobar
-/documentos/{id}/rechazar
-/estados
-/habilitaciones
-/alertas
-/dashboard
-/reportes
-/empresa/personas
-/empresa/documentos
+* /auth/login
+* /personas
+* /empresas
+* /documentos
+* /documentos/{id}/aprobar
+* /documentos/{id}/rechazar
+* /estados
+* /habilitaciones
+* /alertas
+* /dashboard
+* /reportes
+* /empresa/personas
+* /empresa/documentos
 
 Reglas clave
-/empresa/* solo accesible por rol EMPRESA
-/documentos/* requiere rol RESPONSABLE o ADMIN para aprobar/rechazar
-Todas las rutas requieren JWT
+* /empresa/* solo accesible por rol EMPRESA
+* /documentos/* requiere rol RESPONSABLE o ADMIN para aprobar/rechazar
+* Todas las rutas requieren JWT
 
 4. ARQUITECTURA BACKEND (RESUMEN PARA IA)
 Tecnologías
-FastAPI
-SQLAlchemy 2.0
-Alembic
-JWT
-Repository + Service Pattern
+* FastAPI
+* SQLAlchemy 2.0
+* Alembic
+* JWT
+* Repository + Service Pattern
 
 Estructura
 Código
@@ -106,11 +106,11 @@ Multi‑tenant en dependencias
 
 5. ARQUITECTURA FRONTEND (RESUMEN PARA IA)
 Tecnologías
-HTML
-Bootstrap 5
-JS modular
-fetch()
-Tokens en localStorage
+* HTML
+* Bootstrap 5
+* JS modular
+* fetch()
+* Tokens en localStorage
 
 Estructura
 Código
@@ -130,124 +130,119 @@ frontend/
     styles.css
 
 Reglas
-Todas las pantallas cargan datos vía fetch()
-api.js maneja tokens y errores
-Roles en UI: ocultar elementos según rol
+* Todas las pantallas cargan datos vía fetch()
+* api.js maneja tokens y errores
+* Roles en UI: ocultar elementos según rol
 
 6. FLUJO DOCUMENTAL (RESUMEN PARA IA)
-Carga empresa externa
-Empresa carga documento → estado = PENDIENTE_EMPRESA
-Notificación interna
-Revisión consultora
-RESPONSABLE revisa
-Si aprueba → APROBADO
-Si rechaza → RECHAZADO + motivo
-Vencimientos
-Cron job o servicio interno marca VENCIDO
+* Carga empresa externa
+* Empresa carga documento → estado = PENDIENTE_EMPRESA
+* Notificación interna
+* Revisión consultora
+* RESPONSABLE revisa
+* Si aprueba → APROBADO
+* Si rechaza → RECHAZADO + motivo
+* Vencimientos
+* Cron job o servicio interno marca VENCIDO
 
 7. SEGURIDAD Y ROLES (RESUMEN PARA IA)
 Roles
 Código
-ADMIN_CONSULTORA
-RESPONSABLE_HABILITACIONES
-OPERADOR_CONSULTORA
-EMPRESA
-AUDITOR
+* ADMIN_CONSULTORA
+* RESPONSABLE_HABILITACIONES
+* OPERADOR_CONSULTORA
+* EMPRESA
+* AUDITOR
 Reglas
-EMPRESA solo accede a /empresa/*
-ADMIN y RESPONSABLE pueden aprobar documentos
-OPERADOR carga interna
-AUDITOR solo lectura
-JWT obligatorio
-Auditoría en cada acción
+* EMPRESA solo accede a /empresa/*
+* ADMIN y RESPONSABLE pueden aprobar documentos
+* OPERADOR carga interna
+* AUDITOR solo lectura
+* JWT obligatorio
+* Auditoría en cada acción
 
 8. TESTING Y QA (RESUMEN PARA IA)
 Pruebas obligatorias
-Autenticación
-Roles
-CRUD
-Flujo documental
-Multi‑tenant
-Migración Access
-Dashboard
-Reportes
+* Autenticación
+* Roles
+* CRUD
+* Flujo documental
+* Multi‑tenant
+* Migración Access
+* Dashboard
+* Reportes
 
 9. MIGRACIÓN ACCESS → WEBAPP (RESUMEN PARA IA)
 Fases
-Extracción
-Transformación
-Carga
-Validación
-Paralelismo
-Corte
-Validaciones
-Conteos
-Vigencias
-Estados
-Documentos faltantes
+* Extracción
+* Transformación
+* Carga
+* Validación
+* Paralelismo
+* Corte
+* Validaciones
+* Conteos
+* Vigencias
+* Estados
+* Documentos faltantes
 
 10. PLAN DE PROYECTO (RESUMEN PARA IA)
 Sprints
-Infraestructura
-Modelo de datos
-Seguridad
-Personas + Empresas
-Documentos + Aprobación
-Estados + Habilitaciones
-Dashboard + Reportes
-QA + Migración
+* Infraestructura
+* Modelo de datos
+* Seguridad
+* Personas + Empresas
+* Documentos + Aprobación
+* Estados + Habilitaciones
+* Dashboard + Reportes
+* QA + Migración
 Hitos
-Seguridad
-
-Flujo documental
-
-Motor habilitaciones
-Dashboard
-Migración
+* Seguridad
+* Flujo documental
+* Motor habilitaciones
+* Dashboard
+* Migración
 Go‑Live
+
 11. INSTRUCCIONES PARA AGENTES IA
 
 Regla 1 — Este documento es la fuente de verdad
 No inventar entidades, campos, endpoints ni flujos.
 
 Regla 2 — Respetar la arquitectura
-SQLAlchemy 2.0
-FastAPI
-Repository + Service
-HTML/Bootstrap
+* SQLAlchemy 2.0
+* FastAPI
+* Repository + Service
+* HTML/Bootstrap
 
 Regla 3 — Respetar roles y seguridad
-Nunca permitir que EMPRESA acceda a datos de otras empresas.
+* Nunca permitir que EMPRESA acceda a datos de otras empresas.
 
 Regla 4 — Respetar estados de documento
-Solo usar los 5 estados definidos.
+* Solo usar los 5 estados definidos.
 
 Regla 5 — Respetar flujos
-Empresa carga
-Consultora aprueba
-Sistema vence
+* Empresa carga
+* Consultora aprueba
+* Sistema vence
 
 Regla 6 — Respetar estructura de carpetas
-Generar código dentro de los módulos correctos.
+* Generar código dentro de los módulos correctos.
 
 Regla 7 — Respetar nombres
-No cambiar nombres de entidades, campos, rutas o roles.
+* No cambiar nombres de entidades, campos, rutas o roles.
 
 Regla 8 — Respetar modularidad
-Cada módulo tiene:
-repository.py
-service.py
-validators.py
+* Cada módulo tiene:
+* repository.py
+* service.py
+* validators.py
 
 Regla 9 — Respetar UI
-HTML limpio
-Bootstrap 5
-fetch()
-api.js como wrapper
+* HTML limpio
+* Bootstrap 5
+* fetch()
+* api.js como wrapper
 
 Regla 10 — Respetar migración
-No alterar estructura de datos sin considerar Access.
-
- nuevos devs
-
-Decime cuál querés.
+* No alterar estructura de datos sin considerar Access.

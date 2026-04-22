@@ -1,4 +1,4 @@
-ETAPA 1 — CATÁLOGO MAESTRO DE INFORMES
+**ETAPA 1 — CATÁLOGO MAESTRO DE INFORMES**
 Clasificación técnica:
 Operativos (gestión interna)
 Regulatorios (autoridades)
@@ -129,7 +129,7 @@ Diseño de plantillas HTML
 Generación de PDFs
 Integración en dashboard
 
-📘 ETAPA 2 — DISEÑO DEL DASHBOARD (KPIs + Vistas + Arquitectura Técnica)
+**ETAPA 2 — DISEÑO DEL DASHBOARD (KPIs + Vistas + Arquitectura Técnica)**
 Objetivo: definir qué debe mostrar, cómo se estructura, qué datos consume y qué endpoints lo alimentan.
 
 El dashboard será el centro operativo de la webapp.
@@ -258,7 +258,7 @@ Estructura del dashboard
 Requisitos técnicos
 Relación con informes
 
-📘 ETAPA 3 — MODELO DE DATOS FINAL
+**ETAPA 3 — MODELO DE DATOS FINAL**
 Objetivo:  
 Definir la estructura definitiva de datos para la webapp:
 
@@ -498,25 +498,18 @@ Reglas de integridad
 Índices
 Normalización
 
-📘 ETAPA 4 — FLUJO MAESTRO DE LA WEBAPP
+**ETAPA 4 — FLUJO MAESTRO DE LA WEBAPP**
 Objetivo:  
 Definir el flujo completo de la aplicación web, desde login hasta informes, incluyendo:
 
-Procesos
-
-Navegación
-
-Endpoints
-
-Interacciones entre módulos
-
-Estados
-
-Validaciones
-
-Seguridad
-
-Integración con dashboard e informes
+*Procesos
+*Navegación
+*Endpoints
+*Interacciones entre módulos
+*Estados
+*Validaciones
+*Seguridad
+*Integración con dashboard e informes
 
 Este flujo será la columna vertebral del desarrollo en Antigravity / VS Code con agentes IA.
 
@@ -524,298 +517,210 @@ Este flujo será la columna vertebral del desarrollo en Antigravity / VS Code co
 AGENTE 1 — Flow Architect Agent
 Responsabilidad:
 
-Diseñar el flujo completo
-
-Definir pasos, decisiones, bifurcaciones
-
-Alinear procesos con el modelo de datos
+*Diseñar el flujo completo
+*Definir pasos, decisiones, bifurcaciones
+*Alinear procesos con el modelo de datos
 
 Skills:
 
-System Flow Skill
-
-Process Mapping Skill
-
-API Interaction Skill
+*System Flow Skill
+*Process Mapping Skill
+*API Interaction Skill
 
 AGENTE 2 — Backend API Agent
 Responsabilidad:
 
-Definir endpoints
-
-Mapear procesos → rutas
-
-Validar entradas/salidas
-
-Integrar seguridad
+*Definir endpoints
+*Mapear procesos → rutas
+*Validar entradas/salidas
+*Integrar seguridad
 
 Skills:
 
-FastAPI Skill
-
-Validation Skill
-
-Auth Skill
+*FastAPI Skill
+*Validation Skill
+*Auth Skill
 
 AGENTE 3 — Frontend Navigation Agent
 Responsabilidad:
 
-Definir navegación
-
-Estructura de pantallas
-
-Flujo UI → API
+*Definir navegación
+*Estructura de pantallas
+*Flujo UI → API
 
 Skills:
 
-UI Flow Skill
-
-Routing Skill
-
-State Management Skill
+*UI Flow Skill
+*Routing Skill
+*State Management Skill
 
 AGENTE 4 — Compliance Agent
 Responsabilidad:
 
-Validar flujos regulatorios
-
-Asegurar pasos obligatorios por jurisdicción
+*Validar flujos regulatorios
+*Asegurar pasos obligatorios por jurisdicción
 
 Skills:
 
-Regulatory Flow Skill
-
-Validation Skill
+*Regulatory Flow Skill
+*Validation Skill
 
 AGENTE 5 — Data Quality Agent
 Responsabilidad:
-
-Validar consistencia en cada paso
-
-Reglas de negocio
-
-Integridad de datos
+*Validar consistencia en cada paso
+*Reglas de negocio
+*Integridad de datos
 
 Skills:
 
-Data Quality Skill
-
-Business Rules Skill
+*Data Quality Skill
+*Business Rules Skill
 
 2. FLUJO MAESTRO DE LA WEBAPP (ALTO NIVEL)
 Representa el funcionamiento completo del sistema.
 
 2.1. FLUJO DE INICIO (LOGIN)
-Usuario accede a /login
-
-Ingresa credenciales
-
-Backend valida:
-
-Usuario
-
-Contraseña
-
-Estado (activo/bloqueado)
-
-Registra sesión
-
-Obtiene rol
-
-Redirige a /dashboard
+*Usuario accede a /login
+*Ingresa credenciales
+*Backend valida:
+*Usuario
+*Contraseña
+*Estado (activo/bloqueado)
+*Registra sesión
+*Obtiene rol
+*Redirige a /dashboard
 
 Endpoints:
 
-POST /auth/login
-
-GET /auth/me
-
-POST /auth/logout
+*POST /auth/login
+*GET /auth/me
+*POST /auth/logout
 
 2.2. FLUJO PRINCIPAL (DASHBOARD)
-Carga KPIs
-
-Carga gráficos
-
-Carga tablas dinámicas
-
-Filtros por empresa / jurisdicción / estado
-
-Acceso a módulos:
-
-Personas
-
-Empresas
-
-Documentación
-
-Estados
-
-Habilitaciones
-
-Alertas
-
-Informes
+*Carga KPIs
+*Carga gráficos
+*Carga tablas dinámicas
+*Filtros por empresa / jurisdicción / estado
+*Acceso a módulos:
+*Personas
+*Empresas
+*Documentación
+*Estados
+*Habilitaciones
+*Alertas
+*Informes
 
 Endpoints:
 
-/dashboard/*
+* /dashboard/*
 
 2.3. FLUJO DE PERSONA (ALTA → DOCUMENTACIÓN → ESTADOS → HABILITACIÓN)
 A. Alta de persona
-Usuario abre /personas/nueva
-
-Completa datos personales
-
-Asigna empresa
-
-Guarda registro
-
-Redirige a carga documental
+*Usuario abre /personas/nueva
+*Completa datos personales
+*Asigna empresa
+*Guarda registro
+*Redirige a carga documental
 
 Endpoints:
 
-POST /personas
-
-GET /empresas
+*POST /personas
+*GET /empresas
 
 B. Carga de documentación
-Usuario selecciona jurisdicción
-
-Carga documentos (PDF)
-
-Sistema valida:
-
-Tipo
-
-Fecha
-
-Compleción
-
-Actualiza estados parciales
-
-Marca documentación faltante
+*Usuario selecciona jurisdicción
+*Carga documentos (PDF)
+*Sistema valida:
+*Tipo
+*Fecha
+*Compleción
+*Actualiza estados parciales
+*Marca documentación faltante
 
 Endpoints:
 
-POST /documentos
-
-GET /documentos/{persona}
+*POST /documentos
+*GET /documentos/{persona}
 
 C. Estados
-Sistema evalúa documentación
-
-Calcula estados por jurisdicción
-
-Determina estado global
-
-Genera alertas si corresponde
+*Sistema evalúa documentación
+*Calcula estados por jurisdicción
+*Determina estado global
+*Genera alertas si corresponde
 
 Endpoints:
 
-GET /estados/{persona}
-
-POST /estados/recalcular
+*GET /estados/{persona}
+*POST /estados/recalcular
 
 D. Habilitación
-Si estados = APTO
-
-Sistema genera habilitación
-
-Asigna vigencia
-
-Genera credencial
-
-Permite exportar PDF
+*Si estados = APTO
+*Sistema genera habilitación
+*Asigna vigencia
+*Genera credencial
+*Permite exportar PDF
 
 Endpoints:
 
-POST /habilitaciones
-
-GET /habilitaciones/{persona}
+*POST /habilitaciones
+*GET /habilitaciones/{persona}
 
 2.4. FLUJO DE EMPRESA
-Alta de empresa
-
-Asignación de vigiladores
-
-Reportes por empresa
-
-Estados globales
-
-Documentación asociada
+*Alta de empresa
+*Asignación de vigiladores
+*Reportes por empresa
+*Estados globales
+*Documentación asociada
 
 Endpoints:
 
-POST /empresas
-
-GET /empresas/{id}
-
-GET /empresas/{id}/personas
+*POST /empresas
+*GET /empresas/{id}
+*GET /empresas/{id}/personas
 
 2.5. FLUJO DE ALERTAS (motor automático)
-Cron job ejecuta actualizar_alertas
-
-Revisa fechas de vencimiento
-
-Genera alertas
-
-Marca alertas como activas
-
-Dashboard las muestra
-
-Usuario las gestiona
+*Cron job ejecuta actualizar_alertas
+*Revisa fechas de vencimiento
+*Genera alertas
+*Marca alertas como activas
+*Dashboard las muestra
+*Usuario las gestiona
 
 Endpoints:
 
-GET /alertas
-
-POST /alertas/emitir
+*GET /alertas
+*POST /alertas/emitir
 
 2.6. FLUJO DE INFORMES
-Operativos
-Vencimientos
-
-Documentación faltante
-
-Estados
-
-Regulatorios
-Ficha CABA
-
-Ficha PBA
-
-Ficha PNA
-
-Certificados
-
-Analíticos
-Tiempos
-
-Rechazos
-
-Tendencias
+*Operativos
+*Vencimientos
+*Documentación faltante
+*Estados
+*Regulatorios
+*Ficha CABA
+*Ficha PBA
+*Ficha PNA
+*Certificados
+*Analíticos
+*Tiempos
+*Rechazos
+*Tendencias
 
 Endpoints:
 
-GET /reportes/{tipo}
-
-POST /reportes/{tipo}/pdf
+*GET /reportes/{tipo}
+*POST /reportes/{tipo}/pdf
 
 2.7. FLUJO DE AUDITORÍA
-Registro de sesiones
-
-Registro de cambios
-
-Registro de habilitaciones
-
-Registro de alertas
+*Registro de sesiones
+*Registro de cambios
+*Registro de habilitaciones
+*Registro de alertas
 
 Endpoints:
 
-GET /auditoria/sesiones
-
-GET /auditoria/cambios
+*GET /auditoria/sesiones
+*GET /auditoria/cambios
 
 3. NAVEGACIÓN DE LA WEBAPP (UI FLOW)
 Código
@@ -833,54 +738,35 @@ Código
   ├── /alertas
   └── /reportes
 4. VALIDACIONES CRÍTICAS
-DNI único
-
-Documentos obligatorios por jurisdicción
-
-Fechas válidas
-
-Estados consistentes
-
-Habilitación solo si APTO
-
-Roles y permisos
+*DNI único
+*Documentos obligatorios por jurisdicción
+*Fechas válidas
+*Estados consistentes
+*Habilitación solo si APTO
+*Roles y permisos
 
 5. ENTREGABLE DE ESTA ETAPA
-Flujo maestro completo
-
-Endpoints por proceso
-
-Navegación UI
-
-Validaciones
-
-Interacciones entre módulos
-
-Reglas de negocio
+*Flujo maestro completo
+*Endpoints por proceso
+*Navegación UI
+*Validaciones
+*Interacciones entre módulos
+*Reglas de negocio
 
 
-📘 ETAPA 5 — ARQUITECTURA TÉCNICA DE LA WEBAPP
+## ETAPA 5 — ARQUITECTURA TÉCNICA DE LA WEBAPP
 Objetivo: definir la arquitectura completa del sistema:
 
-Backend
+*Backend
+*Frontend
+*Seguridad
+*Infraestructura
+*Integración
+*Procesos batch
+*Almacenamiento
+*Versionado
+*Despliegue
 
-Frontend
-
-Seguridad
-
-Infraestructura
-
-Integración
-
-Procesos batch
-
-Almacenamiento
-
-Versionado
-
-Despliegue
-
-Esta arquitectura será la base para que los agentes IA generen código consistente en Antigravity o VS Code.
 
 1. AGENTES PARA ESTA ETAPA
 AGENTE 1 — System Architect Agent
@@ -1181,7 +1067,7 @@ Versionado
 
 Diagrama técnico
 
-* ETAPA 6 — Diseño de Endpoints (API completa, rutas, métodos, validaciones)
+## ETAPA 6 — Diseño de Endpoints (API completa, rutas, métodos, validaciones)
 
 1. Agentes y skills para esta etapa
 AGENTE 1 — API Design Agent
@@ -1407,7 +1293,7 @@ Relación con procesos de negocio
 
 Base para OpenAPI/Swagger
 
-📘 ESPECIFICACIÓN OPENAPI — VERSIÓN INICIAL (v1.0)
+## ESPECIFICACIÓN OPENAPI — VERSIÓN INICIAL (v1.0)
 Nota: Esta es la estructura base.
 En etapas posteriores se expanden schemas, ejemplos y validaciones.
 
@@ -1558,7 +1444,7 @@ components:
 
 security:
   - BearerAuth: []
-📘 PATHS (ENDPOINTS)
+## PATHS (ENDPOINTS)
 A continuación, la estructura base de rutas.
 
 1. Autenticación
@@ -1751,7 +1637,7 @@ Seguridad definida
 
 Estructura lista para expansión
 
-ETAPA 7 — Diseño de Vistas HTML / UI (componentes, pantallas, navegación)
+## ETAPA 7 — Diseño de Vistas HTML / UI (componentes, pantallas, navegación)
 
 1. Agentes y skills para esta etapa
 AGENTE 1 — UI Architect Agent
@@ -1960,7 +1846,7 @@ Relación UI ↔ API
 Reglas de visibilidad por rol
 
 
-ETAPA 8 — TESTING, QA Y MIGRACIÓN ACCESS → WEBAPP
+## ETAPA 8 — TESTING, QA Y MIGRACIÓN ACCESS → WEBAPP
 Esta etapa asegura:
 
 calidad funcional
@@ -2249,7 +2135,7 @@ Estrategia de corte
 
 Roles de agentes
 
-📘 ETAPA 10 — Estructura del Proyecto (Repositorio + Módulos + Convenciones)
+## ETAPA 9 — Estructura del Proyecto (Repositorio + Módulos + Convenciones)
 Objetivo: definir cómo se organiza el proyecto completo, para que:
 
 el equipo humano
@@ -2455,7 +2341,7 @@ Convenciones
 Carpetas de documentación
 Base para iniciar desarrollo real
 
-📘 ETAPA 10 — IMPLEMENTACIÓN BASE (BACKEND + UI + PLAN DE PROYECTO)
+## ETAPA 10 — IMPLEMENTACIÓN BASE (BACKEND + UI + PLAN DE PROYECTO)
 Esta etapa define cómo se baja el diseño a código real, manteniendo modularidad, escalabilidad y compatibilidad con agentes IA.
 
 🔹 ETAPA 10.1 — Bajar modelo de datos → SQLAlchemy
@@ -2649,7 +2535,7 @@ Prototipo UI
 Plan de proyecto completo
 
 
-📘 ETAPA 11 — Implementación Backend (SQLAlchemy Models)
+## ETAPA 11 — Implementación Backend (SQLAlchemy Models)
 Objetivo:  
 Transformar el modelo de datos (Etapa 3) en modelos SQLAlchemy 2.0, organizados por dominio, con claves primarias, relaciones, enums, timestamps y consistencia referencial.
 
@@ -2874,7 +2760,7 @@ class Alerta(Base):
 ✔ Base para endpoints FastAPI
 
 
-📘 ETAPA 12 — Implementación Backend (FastAPI: Rutas + Schemas + Controladores)
+## ETAPA 12 — Implementación Backend (FastAPI: Rutas + Schemas + Controladores)
 Objetivo
 Transformar la especificación OpenAPI (Etapa 6) en:
 
@@ -3149,7 +3035,7 @@ def require_role(*roles):
 ✔ Estructura modular completa
 
 
-📘 ETAPA 13 — Implementación de Lógica Real (CRUD + Servicios + Repositorios)
+## ETAPA 13 — Implementación de Lógica Real (CRUD + Servicios + Repositorios)
 Objetivo
 Construir la lógica real del backend:
 
@@ -3398,7 +3284,7 @@ def personas_empresa(
 ✔ Seguridad aplicada a endpoints
 ✔ Backend funcional (sin UI todavía)
 
-📘 ETAPA 14 — Prototipo UI (HTML/Bootstrap)
+## ETAPA 14 — Prototipo UI (HTML/Bootstrap)
 Objetivo:  
 Construir un prototipo navegable, estático, modular y limpio, que represente:
 
@@ -3744,7 +3630,7 @@ html
 ✔ Preparado para integración con API
 ✔ Base para Etapa 15 (código HTML real)
 
-📘 ETAPA 15 — Prototipo UI (HTML/Bootstrap) — CÓDIGO REAL
+## ETAPA 15 — Prototipo UI (HTML/Bootstrap) — CÓDIGO REAL
 Objetivo
 Generar el código HTML base de:
 
@@ -4028,7 +3914,7 @@ html
 ✔ Estructura lista para integrar JS y API
 
 
-📘 ETAPA 16 — Integración UI con API (fetch, tokens, roles, empresa externa)
+## ETAPA 16 — Integración UI con API (fetch, tokens, roles, empresa externa)
 Objetivo
 Conectar el prototipo HTML/Bootstrap (Etapa 15) con el backend FastAPI (Etapas 11–13), implementando:
 
@@ -4299,7 +4185,9 @@ function aplicarRoles() {
 }
 
 window.onload = aplicarRoles;
+
 9. ENTREGABLE DE ESTA ETAPA
+
 ✔ Autenticación real en UI
 ✔ Tokens guardados en localStorage
 ✔ Wrapper fetch global
@@ -4310,40 +4198,18 @@ window.onload = aplicarRoles;
 ✔ Manejo de errores y expiración de sesión
 
 
-📘 ETAPA 17 — Plan de Proyecto (Sprints, Entregables, Hitos)
-Objetivo
-Definir un plan completo, con:
-
-Sprints
-
-Alcance por sprint
-
-Entregables
-
-Hitos
-
-Criterios de aceptación
-
-Riesgos y mitigaciones
-
-Participación de agentes IA
-
-Este plan está optimizado para un desarrollo ágil, modular, iterativo y compatible con IA asistida.
+## ETAPA 17 — Plan de Proyecto (Sprints, Entregables, Hitos)
 
 1. ESTRUCTURA GENERAL DEL PROYECTO
 Duración estimada: 8 semanas  
 Metodología: Scrum / Sprints semanales  
 Equipo:
 
-1 Líder técnico (vos)
-
-1 Backend
-
-1 Frontend
-
-1 QA
-
-Agentes IA (asistentes permanentes)
+- 1 Líder técnico 
+- 1 Backend
+- 1 Frontend
+- 1 QA
+- Agentes IA (asistentes permanentes)
 
 2. SPRINTS (DETALLE COMPLETO)
 🟦 Sprint 1 — Infraestructura + Repositorio (Semana 1)
@@ -4351,26 +4217,18 @@ Objetivo
 Dejar el proyecto listo para desarrollo.
 
 Tareas
-Crear repositorio Git
-
-Crear estructura backend (FastAPI)
-
-Crear estructura frontend (HTML/Bootstrap)
-
-Configurar Docker
-
-Configurar base de datos (PostgreSQL)
-
-Crear entorno virtual + dependencias
-
-Configurar Alembic
+* Crear repositorio Git
+* Crear estructura backend (FastAPI)
+* Crear estructura frontend (HTML/Bootstrap)
+* Configurar Docker
+* Configurar base de datos (PostgreSQL)
+* Crear entorno virtual + dependencias
+* Configurar Alembic
 
 Entregables
-Proyecto vacío pero estructurado
-
-Docker funcionando
-
-DB inicial creada
+* Proyecto vacío pero estructurado
+* Docker funcionando
+* DB inicial creada
 
 Hito
 ✔ “Proyecto inicial listo para desarrollo”
@@ -4380,20 +4238,15 @@ Objetivo
 Implementar el modelo de datos completo.
 
 Tareas
-Crear modelos SQLAlchemy
-
-Crear migraciones Alembic
-
-Crear seeds básicos
-
-Validar integridad referencial
+* Crear modelos SQLAlchemy
+* Crear migraciones Alembic
+* Crear seeds básicos
+* Validar integridad referencial
 
 Entregables
-DB funcional
-
-Migraciones listas
-
-Modelo de datos estable
+* DB funcional
+* Migraciones listas
+* Modelo de datos estable
 
 Hito
 ✔ “Modelo de datos final implementado”
@@ -4403,22 +4256,16 @@ Objetivo
 Implementar seguridad completa.
 
 Tareas
-JWT access + refresh
-
-Roles: Admin, Responsable, Operador, Empresa, Auditor
-
-Aislamiento empresa (multi‑tenant)
-
-Auditoría de acciones
-
-Endpoints /auth/*
+* JWT access + refresh
+* Roles: Admin, Responsable, Operador, Empresa, Auditor
+* Aislamiento empresa (multi‑tenant)
+* Auditoría de acciones
+* Endpoints /auth/*
 
 Entregables
-Login funcionando
-
-Roles aplicados
-
-Auditoría básica
+* Login funcionando
+* Roles aplicados
+* Auditoría básica
 
 Hito
 ✔ “Seguridad y roles operativos”
@@ -4428,20 +4275,15 @@ Objetivo
 CRUD completo de personas y empresas.
 
 Tareas
-Endpoints /personas
-
-Endpoints /empresas
-
-Validaciones
-
-UI: personas.html + empresas.html
-
-Integración UI ↔ API
+* Endpoints /personas
+* Endpoints /empresas
+* Validaciones
+* UI: personas.html + empresas.html
+* Integración UI ↔ API
 
 Entregables
-CRUD funcionando
-
-Tablas dinámicas en UI
+* CRUD funcionando
+* Tablas dinámicas en UI
 
 Hito
 ✔ “Gestión de personas y empresas operativa”
@@ -4451,22 +4293,16 @@ Objetivo
 Implementar el flujo crítico del sistema.
 
 Tareas
-Carga empresa externa
-
-Estados documento
-
-Aprobación / rechazo
-
-Notificaciones internas
-
-UI: documentos.html
-
-Modal de carga
+* Carga empresa externa
+* Estados documento
+* Aprobación / rechazo
+* Notificaciones internas
+* UI: documentos.html
+* Modal de carga
 
 Entregables
-Flujo empresa → consultora funcionando
-
-Documentos con estados reales
+* Flujo empresa → consultora funcionando
+* Documentos con estados reales
 
 Hito
 ✔ “Flujo documental completo”
@@ -4476,18 +4312,14 @@ Objetivo
 Implementar lógica de negocio avanzada.
 
 Tareas
-Recalcular estados
-
-Generar habilitaciones
-
-Generar PDF
-
-UI: habilitaciones.html
+* Recalcular estados
+* Generar habilitaciones
+* Generar PDF
+* UI: habilitaciones.html
 
 Entregables
-Habilitaciones operativas
-
-Estados automáticos
+* Habilitaciones operativas
+* Estados automáticos
 
 Hito
 ✔ “Motor de habilitaciones funcionando”
@@ -4497,20 +4329,15 @@ Objetivo
 Implementar analítica y reporting.
 
 Tareas
-KPIs
-
-Gráficos
-
-Reportes JSON
-
-Reportes PDF
-
-UI: dashboard.html + reportes.html
+* KPIs
+* Gráficos
+* Reportes JSON
+* Reportes PDF
+* UI: dashboard.html + reportes.html
 
 Entregables
-Dashboard completo
-
-Reportes descargables
+* Dashboard completo
+* Reportes descargables
 
 Hito
 ✔ “Analítica y reportes listos”
@@ -4520,24 +4347,17 @@ Objetivo
 Asegurar calidad y migrar datos.
 
 Tareas
-ETL Access → PostgreSQL
-
-Validación de datos
-
-Pruebas funcionales
-
-Pruebas automatizadas
-
-Paralelismo
-
-Corte final
+* ETL Access → PostgreSQL
+* Validación de datos
+* Pruebas funcionales
+* Pruebas automatizadas
+* Paralelismo
+* Corte final
 
 Entregables
-Datos migrados
-
-QA completo
-
-Sistema listo para producción
+* Datos migrados
+* QA completo
+* Sistema listo para producción
 
 Hito
 ✔ “Sistema listo para producción”
@@ -4559,35 +4379,27 @@ Hito 7: Go‑Live
 
 4. RIESGOS Y MITIGACIONES
 Riesgo	Mitigación
-Complejidad del flujo documental	Dividir en sub‑módulos + tests
-Datos inconsistentes en Access	Validación previa + reglas de limpieza
-Roles mal aplicados	Testing exhaustivo + auditoría
-UI no alineada con API	Contrato OpenAPI como fuente de verdad
-Migración fallida	Paralelismo + rollback plan
+* Complejidad del flujo documental	Dividir en sub‑módulos + tests
+* Datos inconsistentes en Access	Validación previa + reglas de limpieza
+* Roles mal aplicados	Testing exhaustivo + auditoría
+* UI no alineada con API	Contrato OpenAPI como fuente de verdad
+* Migración fallida	Paralelismo + rollback plan
 
 
 5. PARTICIPACIÓN DE AGENTES IA
 Agentes IA intervienen en:
-Generación de código repetitivo
-
-Validaciones
-
-Documentación
-
-Testing
-
-ETL
-
-Refactorización
-
-Generación de reportes
+* Generación de código repetitivo
+* Validaciones
+* Documentación
+* Testing
+* ETL
+* Refactorización
+* Generación de reportes
 
 No intervienen en:
-Decisiones de negocio
-
-Aprobación documental
-
-Seguridad crítica
+* Decisiones de negocio
+* Aprobación documental
+* Seguridad crítica
 
 6. ENTREGABLE DE ESTA ETAPA
 ✔ Plan completo del proyecto

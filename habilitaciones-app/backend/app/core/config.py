@@ -1,0 +1,48 @@
+from typing import List, Union
+from pydantic import AnyHttpUrl, validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "SGH-V1"
+    VERSION: str = "1.0.0"
+    API_V1_STR: str = "/api/v1"
+    
+    # DATABASE_URL: str = "postgresql+asyncpg://user:pass@localhost/dbname"
+    POSTGRES_SERVER: str = "db"
+    POSTGRES_USER: str = "sgh_user"
+    POSTGRES_PASSWORD: str = "sgh_password"
+    POSTGRES_DB: str = "sgh_db"
+    POSTGRES_PORT: int = 5432
+    
+    @property
+    def ASYNC_DATABASE_URL(self) -> str:
+        # Si el servidor es 'db' (Docker) y no hay conexión, se podría fallar.
+        # Para pruebas locales en Windows, si no hay POSTGRES_SERVER real, usamos SQLite.
+        if self.POSTGRES_SERVER == "db":
+             # Intento de detección: si no estamos en Docker, usar SQLite
+             import os
+             if not os.path.exists("/.dockerenv"):
+                 return "sqlite+aiosqlite:///./test.db"
+        
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+
+    # CORE SETTINGS
+    SECRET_KEY: str = "SUPER_SECRET_KEY_CHANGEME"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
+    
+    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    
+    # Directorio para almacenamiento de archivos
+    UPLOAD_DIR: str = "uploads"
+
+    @validator("BACKEND_CORS_ORIGINS", pre=True)
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[AnyHttpUrl], str]:
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",")]
+        elif isinstance(v, (list, str)):
+            return v
+        raise ValueError(v)
+
+    model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
+
+settings = Settings()
