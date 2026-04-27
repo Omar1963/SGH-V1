@@ -1,1 +1,24 @@
 Generic single-database configuration.
+
+Comandos Alembic:
+
+Comando	Descripción
+
+alembic init alembic
+Crea la carpeta alembic y configuración básica.
+
+alembic revision --autogenerate -m "mensaje"
+Genera un archivo de migración (SQL) basado en cambios en tus modelos.
+
+alembic upgrade head
+Aplica todas las migraciones pendientes.
+
+alembic downgrade -1
+Revierte la última migración.
+
+Configuración:
+
+DB: postgres:15
+Schema: postgres (o puedes crear uno propio)
+Usa: Alembic + SQLAlchemy (configurado en tu app)
+

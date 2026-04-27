@@ -12,12 +12,15 @@ def get_application() -> FastAPI:
 
     # Configuración de CORS
     application.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=[
+                   str(origin) for origin in settings.BACKEND_CORS_ORIGINS
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
     # Inclusión del Router Principal de la API
     application.include_router(api_router, prefix=settings.API_V1_STR)

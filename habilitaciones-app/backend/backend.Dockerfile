@@ -15,5 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar el código
 COPY . .
 
-# Comando por defecto
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Comando por defecto "Produccion"
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# Comando para desarrollo con reload
+# CMD ["uvicorn", "app.main:app", "--host", "[IP_ADDRESS]", "--port", "8000", "--reload"]

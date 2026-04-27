@@ -1,43 +1,40 @@
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: sgh-db
-    restart: always
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-sgh_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sgh_password}
-      POSTGRES_DB: ${POSTGRES_DB:-sgh_db}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
 
   backend:
     build:
       context: ../backend
-      dockerfile: ../docker/backend.Dockerfile
+      dockerfile: backend.Dockerfile
     container_name: sgh-backend
     ports:
       - "8000:8000"
-    environment:
-      POSTGRES_SERVER: db
-      POSTGRES_USER: ${POSTGRES_USER:-sgh_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sgh_password}
-      POSTGRES_DB: ${POSTGRES_DB:-sgh_db}
     depends_on:
       - db
+    environment:
+      POSTGRES_SERVER: db
+      POSTGRES_USER: sgh_user
+      POSTGRES_PASSWORD: sgh_password
+      POSTGRES_DB: sgh_db
+      POSTGRES_PORT: 5432
+    restart: always
 
   frontend:
     build:
       context: ../frontend
-      dockerfile: ../docker/frontend.Dockerfile
+      dockerfile: frontend.Dockerfile
     container_name: sgh-frontend
     ports:
       - "8080:80"
     depends_on:
       - backend
+    restart: always
 
-volumes:
-  postgres_data:
-
-
+  db:
+    image: postgres:15-alpine
+    container_name: sgh-db
+    environment:
+      POSTGRES_USER: sgh_user
+      POSTGRES_PASSWORD: sgh_password
+      POSTGRES_DB: sgh_db
+    ports:
+      - "5432:5432"
+    restart: always
