@@ -35,7 +35,7 @@ cls
 echo ============================================
 echo     Iniciando Base de Datos PostgreSQL...
 echo ============================================
-docker compose -f docs\docker-compose.yml up -d db
+docker compose -f docker\docker-compose.yml up -d db
 echo.
 pause
 goto menu
@@ -68,7 +68,7 @@ echo     Iniciando TODO SGH-V1
 echo ============================================
 
 echo [1/3] Base de datos...
-docker compose -f docs\docker-compose.yml up -d db
+docker compose -f docker\docker-compose.yml up -d db
 
 echo [2/3] Backend...
 call :activate_venv
@@ -90,7 +90,7 @@ cls
 echo ============================================
 echo     Deteniendo contenedores Docker...
 echo ============================================
-docker compose -f docs\docker-compose.yml down
+docker compose -f docker\docker-compose.yml down
 echo.
 pause
 goto menu
