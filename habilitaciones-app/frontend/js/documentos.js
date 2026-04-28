@@ -1,4 +1,7 @@
+/* global bootstrap */
+
 import api from './api.js';
+import auth from './auth.js';
 
 /**
  * documentos.js - Lógica para la gestión documental.
@@ -143,7 +146,7 @@ const documentos = {
         formData.append('file', fileInput.files[0]);
         formData.append('tipo_documento', document.getElementById('tipo_documento').value);
         formData.append('vencimiento', document.getElementById('vencimiento_input').value);
-        
+
         const personaId = document.getElementById('persona_id_link').value;
         if (personaId) formData.append('persona_id', personaId);
 
@@ -163,10 +166,10 @@ const documentos = {
             const modalEl = document.getElementById('uploadModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
-            
+
             document.getElementById('uploadForm').reset();
             await this.loadDocumentos();
-            
+
         } catch (error) {
             alert('Error: ' + error.message);
         }

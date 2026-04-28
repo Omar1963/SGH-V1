@@ -1,4 +1,6 @@
+/* global bootstrap */
 import api from './api.js';
+
 
 /**
  * empresas.js - Lógica para la gestión de empresas.
@@ -70,16 +72,16 @@ const empresas = {
 
         try {
             await api.post('/empresas/', data);
-            
+
             // Cerrar modal (Bootstrap 5 way)
             const modalEl = document.getElementById('empresaModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
-            
+
             // Limpiar y recargar
             document.getElementById('empresaForm').reset();
             await this.loadEmpresas();
-            
+
         } catch (error) {
             alert('Error al crear empresa: ' + error.message);
         }

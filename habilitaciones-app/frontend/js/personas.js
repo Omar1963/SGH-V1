@@ -1,3 +1,4 @@
+/* global bootstrap */
 import api from './api.js';
 
 /**
@@ -73,14 +74,14 @@ const personas = {
 
         try {
             await api.post('/personas/', data);
-            
+
             const modalEl = document.getElementById('personaModal');
             const modal = bootstrap.Modal.getInstance(modalEl);
             modal.hide();
-            
+
             document.getElementById('personaForm').reset();
             await this.loadPersonas();
-            
+
         } catch (error) {
             alert('Error al crear persona: ' + error.message);
         }

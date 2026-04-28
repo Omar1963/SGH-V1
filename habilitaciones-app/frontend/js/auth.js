@@ -1,4 +1,4 @@
-import api from './api.js';
+/*import api from './api.js';*/
 
 /**
  * auth.js - Gestión de estado y sesión de usuario.
@@ -29,7 +29,7 @@ const auth = {
 
             const data = await response.json();
             localStorage.setItem('token', data.access_token);
-            
+
             // Opcional: Almacenar datos básicos del usuario
             // const user = await api.get('/auth/me');
             // localStorage.setItem('user', JSON.stringify(user));
@@ -63,18 +63,18 @@ const auth = {
     getUserRole() {
         const token = localStorage.getItem('token');
         if (!token) return null;
-        
+
         // Decodificar JWT (parte payload) para obtener datos sin pegarle a la API cada vez
         try {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+            const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
             }).join(''));
 
             const payload = JSON.parse(jsonPayload);
             return payload.role; // Asumimos que el backend incluyó 'role' en el sub o claims
-        } catch (e) {
+        } catch (_) {
             return null;
         }
     },
