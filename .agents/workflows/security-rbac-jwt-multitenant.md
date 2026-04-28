@@ -1,5 +1,5 @@
 ---
-description: 
+description: evisar y reforzar JWT, RBAC y aislamiento multi-tenant
 ---
 
 ---
@@ -174,6 +174,3 @@ Este skill **NO puede**:
 
 ## 10. Cierre
 Este skill permite que el agente trabaje como un **especialista senior en seguridad**, reforzando JWT, RBAC y multi‑tenant sin bloquear el desarrollo y manteniendo la integridad del sistema SGH‑V1.
-
-
-
