@@ -12,7 +12,7 @@ call backend\.venv\Scripts\activate
 
 echo.
 echo [2/5] Iniciando Base de Datos (Docker)...
-docker compose -f docs\docker-compose.yml up -d db
+docker compose -f docker\docker-compose.yml up -d db
 
 echo.
 echo [3/5] Ejecutando migraciones Alembic...
@@ -22,7 +22,7 @@ cd ..
 
 echo.
 echo [4/5] Iniciando Backend FastAPI...
-start cmd /k "cd backend && py -m uvicorn app.main:app --reload --port 8000"
+start cmd /k "cd backend && py -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
 
 echo.
 echo [5/5] Iniciando Frontend en puerto 8081...
