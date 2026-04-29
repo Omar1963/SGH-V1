@@ -2,6 +2,7 @@
 
 import api from './api.js';
 import auth from './auth.js';
+import { buildApiUrl } from './api.js';
 
 /**
  * documentos.js - Lógica para la gestión documental.
@@ -34,10 +35,10 @@ const documentos = {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${doc.id}</td>
-                    <td><strong>${doc.tipo_documento}</strong></td>
+                    <td><strong>${doc.tipo}</strong></td>
                     <td><sup>ID:</sup> ${doc.persona_id || doc.empresa_id || 'N/A'}</td>
                     <td><span class="badge ${this.getStatusBadgeClass(doc.estado)}">${doc.estado}</span></td>
-                    <td>${doc.vencimiento ? new Date(doc.vencimiento).toLocaleDateString() : '-'}</td>
+                    <td>${doc.fecha_vencimiento ? new Date(doc.fecha_vencimiento).toLocaleDateString() : '-'}</td>
                     <td class="text-end">
                         <div class="btn-group">
                             <button class="btn btn-sm btn-outline-success download-btn" data-id="${doc.id}" title="Descargar">
@@ -144,8 +145,9 @@ const documentos = {
 
         const formData = new FormData();
         formData.append('file', fileInput.files[0]);
-        formData.append('tipo_documento', document.getElementById('tipo_documento').value);
-        formData.append('vencimiento', document.getElementById('vencimiento_input').value);
+        formData.append('tipo', document.getElementById('tipo_documento').value);
+        formData.append('jurisdiccion', 'CABA');
+        formData.append('fecha_presentacion', new Date().toISOString().slice(0, 10));
 
         const personaId = document.getElementById('persona_id_link').value;
         if (personaId) formData.append('persona_id', personaId);
@@ -153,7 +155,7 @@ const documentos = {
         try {
             // Nota: api.post usa JSON.stringify. Para FormData usamos fetch directo con el token.
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:8000/api/v1/documentos/upload', {
+            const response = await fetch(buildApiUrl('/documentos/upload'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -181,7 +183,7 @@ const documentos = {
     async handleDownload(id) {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://localhost:8000/api/v1/documentos/download/${id}`, {
+            const response = await fetch(buildApiUrl(`/documentos/${id}/download`), {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 

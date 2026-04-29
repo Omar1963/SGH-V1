@@ -56,6 +56,16 @@ async def update_persona(
 ):
     return await service.update_persona(persona_id, persona_in, current_user)
 
+
+@router.patch("/{persona_id}", response_model=Persona)
+async def patch_persona(
+    persona_id: int,
+    persona_in: PersonaUpdate,
+    current_user: Usuario = Depends(access_required),
+    service: PersonaService = Depends(get_persona_service)
+):
+    return await service.update_persona(persona_id, persona_in, current_user)
+
 @router.delete("/{persona_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_persona(
     persona_id: int,

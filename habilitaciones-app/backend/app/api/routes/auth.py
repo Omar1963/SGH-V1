@@ -10,6 +10,8 @@ from app.db.models.usuario import Usuario
 from app.core import security
 from app.core.config import settings
 from app.api.schemas.token import Token
+from app.api.dependencies.auth import get_current_user
+from app.api.schemas.user import User
 
 router = APIRouter()
 
@@ -35,7 +37,23 @@ async def login_access_token(
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return {
         "access_token": security.create_access_token(
-            user.usuario, expires_delta=access_token_expires
+            user.usuario,
+            expires_delta=access_token_expires,
+            extra_claims={
+                "role": user.rol.value,
+                "empresa_id": user.empresa_id,
+            },
         ),
         "token_type": "bearer",
     }
+
+
+@router.get("/me", response_model=User)
+async def get_me(current_user: Usuario = Depends(get_current_user)) -> Any:
+    return current_user
+
+
+@router.post("/logout")
+async def logout() -> Any:
+    # JWT stateless: logout is handled client-side by removing token.
+    return {"message": "Logout exitoso"}

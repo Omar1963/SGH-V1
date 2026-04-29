@@ -55,10 +55,13 @@ class DocumentoService:
             content = await file.read()
             await out_file.write(content)
 
-        # Determinar estado inicial
-        estado = EstadoDocumento.PENDIENTE_REVISION
-        if current_user.rol in [UserRole.ADMIN_CONSULTORA, UserRole.RESPONSABLE_HABILITACIONES]:
-            estado = EstadoDocumento.APROBADO # Admins aprueban directo si quieren
+        # Determinar estado inicial segun flujo maestro:
+        # Empresa carga -> PENDIENTE_EMPRESA
+        # Carga interna consultora -> PENDIENTE_REVISION
+        if current_user.rol == UserRole.EMPRESA:
+            estado = EstadoDocumento.PENDIENTE_EMPRESA
+        else:
+            estado = EstadoDocumento.PENDIENTE_REVISION
 
         doc_data = {
             "persona_id": persona_id,
@@ -87,5 +90,27 @@ class DocumentoService:
         # Solo roles de consultora pueden cambiar estados de revisión
         if current_user.rol not in [UserRole.ADMIN_CONSULTORA, UserRole.RESPONSABLE_HABILITACIONES, UserRole.OPERADOR_CONSULTORA]:
             raise HTTPException(status_code=403, detail="Acción no permitida")
-        
+
+        doc = await self.repository.get_by_id(doc_id)
+        if not doc:
+            raise HTTPException(status_code=404, detail="Documento no encontrado")
+
+        valid_transitions = {
+            EstadoDocumento.PENDIENTE_EMPRESA: {EstadoDocumento.PENDIENTE_REVISION},
+            EstadoDocumento.PENDIENTE_REVISION: {EstadoDocumento.APROBADO, EstadoDocumento.RECHAZADO},
+            EstadoDocumento.APROBADO: {EstadoDocumento.VENCIDO},
+            EstadoDocumento.RECHAZADO: {EstadoDocumento.PENDIENTE_EMPRESA},
+            EstadoDocumento.VENCIDO: set(),
+        }
+
+        current_state = doc.estado
+        if nuevo_estado == current_state:
+            return doc
+
+        if nuevo_estado not in valid_transitions.get(current_state, set()):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Transicion invalida: {current_state} -> {nuevo_estado}",
+            )
+
         return await self.repository.update(doc_id, {"estado": nuevo_estado})

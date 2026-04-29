@@ -4,128 +4,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SGH-V1 | Dashboard</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; }
-        .sidebar { width: 280px; height: 100vh; position: fixed; background: #2c3e50; color: #fff; z-index: 1000; }
+        body { font-family: 'Inter', sans-serif; background-color: #f5f7fb; }
+        .sidebar { width: 280px; height: 100vh; position: fixed; background: #111827; color: #fff; }
         .main-content { margin-left: 280px; padding: 2rem; }
-        .nav-link { color: rgba(255,255,255,0.7); }
-        .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,0.1); }
-        .stat-card { border: none; border-radius: 1rem; transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-5px); }
+        .nav-link { color: rgba(255,255,255,.76); border-radius: 8px; }
+        .nav-link:hover, .nav-link.active { color: #fff; background: rgba(255,255,255,.12); }
+        .role-badge { font-size: .75rem; }
+        .stat-card { border: 0; border-radius: 12px; }
     </style>
 </head>
 <body>
-    <!-- Barra Lateral -->
     <nav class="sidebar p-3 d-flex flex-column">
-        <h3 class="fw-bold text-center mb-4 text-primary">SGH-V1</h3>
+        <h3 class="fw-bold text-center mb-1 text-info">SGH-V1</h3>
+        <div class="text-center mb-3">
+            <span id="roleBadge" class="badge text-bg-light role-badge">Sin Rol</span>
+        </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto">
-            <li class="nav-item">
-                <a href="#" class="nav-link active"><i class="fas fa-chart-line me-2"></i> Dashboard</a>
+            <li class="nav-item" data-roles="ADMIN_CONSULTORA,RESPONSABLE_HABILITACIONES,OPERADOR_CONSULTORA,EMPRESA,AUDITOR">
+                <a href="dashboard.html" class="nav-link active"><i class="fas fa-chart-line me-2"></i>Dashboard</a>
             </li>
-            <li>
-                <a href="#" class="nav-link"><i class="fas fa-building me-2"></i> Empresas</a>
+            <li data-roles="ADMIN_CONSULTORA,RESPONSABLE_HABILITACIONES">
+                <a href="empresas.html" class="nav-link"><i class="fas fa-building me-2"></i>Empresas</a>
             </li>
-            <li>
-                <a href="#" class="nav-link"><i class="fas fa-users me-2"></i> Personas</a>
+            <li data-roles="ADMIN_CONSULTORA,RESPONSABLE_HABILITACIONES,OPERADOR_CONSULTORA,EMPRESA,AUDITOR">
+                <a href="personas.html" class="nav-link"><i class="fas fa-users me-2"></i>Personas</a>
             </li>
-            <li>
-                <a href="#" class="nav-link"><i class="fas fa-file-alt me-2"></i> Documentación</a>
+            <li data-roles="ADMIN_CONSULTORA,RESPONSABLE_HABILITACIONES,OPERADOR_CONSULTORA,EMPRESA">
+                <a href="documentos.html" class="nav-link"><i class="fas fa-file-alt me-2"></i>Documentación</a>
             </li>
         </ul>
         <hr>
-        <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                <i class="fas fa-user-circle fa-2x me-2"></i>
-                <strong id="userNameDisplay">Usuario</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="#" id="logoutBtn">Cerrar Sesión</a></li>
-            </ul>
-        </div>
+        <div class="small text-light-emphasis mb-2" id="userNameDisplay">Usuario</div>
+        <button class="btn btn-outline-light btn-sm w-100" id="logoutBtn">Cerrar sesión</button>
     </nav>
 
-    <!-- Contenido Principal -->
     <main class="main-content">
         <header class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h2">Panel de Control</h1>
+            <div>
+                <h1 class="h3 mb-0">Panel de Control</h1>
+                <p class="text-muted small mb-0">Resumen rápido y builder de dashboards.</p>
+            </div>
             <div id="currentDate" class="text-muted small"></div>
         </header>
-
-        <div class="row g-4" id="statsContainer">
-            <!-- Tarjetas de Estadísticas se cargan aquí -->
+        <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <div class="card stat-card bg-success text-white p-3">
-                    <div class="card-body">
-                        <h6 class="card-title text-uppercase opacity-75">Vigentes</h6>
-                        <h2 class="display-5 fw-bold" id="statVigentes">-</h2>
-                    </div>
+                    <h6 class="text-uppercase opacity-75">Vigentes</h6>
+                    <h2 id="statVigentes">-</h2>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card stat-card bg-warning text-dark p-3">
-                    <div class="card-body">
-                        <h6 class="card-title text-uppercase opacity-75">Por Vencer</h6>
-                        <h2 class="display-5 fw-bold" id="statPorVencer">-</h2>
-                    </div>
+                    <h6 class="text-uppercase opacity-75">Por vencer</h6>
+                    <h2 id="statPorVencer">-</h2>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card stat-card bg-danger text-white p-3">
-                    <div class="card-body">
-                        <h6 class="card-title text-uppercase opacity-75">Vencidos</h6>
-                        <h2 class="display-5 fw-bold" id="statVencidos">-</h2>
-                    </div>
+                    <h6 class="text-uppercase opacity-75">Vencidos</h6>
+                    <h2 id="statVencidos">-</h2>
                 </div>
             </div>
         </div>
+
+        <section class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="h5 mb-1">Builder de Dashboards</h2>
+                    <p class="text-muted small mb-0">Crea dashboards y ejecuta consultas de widgets.</p>
+                </div>
+                <button id="refreshDashboardsBtn" class="btn btn-secondary btn-sm">Actualizar lista</button>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-6">
+                    <form id="createDashboardForm">
+                        <div class="mb-3">
+                            <label for="dashboardName" class="form-label">Nombre</label>
+                            <input type="text" id="dashboardName" class="form-control" placeholder="Ej. Tablero de habilitaciones" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dashboardDescription" class="form-label">Descripción</label>
+                            <textarea id="dashboardDescription" rows="2" class="form-control" placeholder="Descripción breve"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dashboardVisibility" class="form-label">Visibilidad</label>
+                            <select id="dashboardVisibility" class="form-select">
+                                <option value="PRIVATE" selected>Privado</option>
+                                <option value="PUBLIC">Público</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Crear dashboard</button>
+                    </form>
+                </div>
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label for="dashboardSelector" class="form-label">Dashboards guardados</label>
+                        <select id="dashboardSelector" class="form-select"></select>
+                    </div>
+                    <button id="queryDashboardBtn" class="btn btn-success me-2">Ejecutar dashboard</button>
+                    <div id="builderMessage" class="mt-3 text-muted small"></div>
+                </div>
+            </div>
+
+            <div id="dashboardResults" class="mt-4"></div>
+        </section>
     </main>
 
-    <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script type="module">
         import api from './js/api.js';
         import auth from './js/auth.js';
 
-        // Seguridad: Redirigir si no hay token
-        if (!auth.isAuthenticated()) {
-            window.location.href = '/login.html';
-        }
-
-        // Aplicar permisos de UI según Rol
+        if (!auth.isAuthenticated()) window.location.href = '/login.html';
         auth.applyUIPermissions();
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => auth.logout());
+
+        document.getElementById('createDashboardForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            await createDashboard();
+        });
+
+        document.getElementById('refreshDashboardsBtn').addEventListener('click', async () => {
+            await loadDashboardList();
+        });
+
+        document.getElementById('queryDashboardBtn').addEventListener('click', async () => {
+            await executeSelectedDashboard();
+        });
 
         async function loadDashboardData() {
             try {
                 const summary = await api.get('/dashboard/summary');
-                
                 document.getElementById('statVigentes').textContent = summary.habilitaciones_vigentes;
                 document.getElementById('statPorVencer').textContent = summary.habilitaciones_por_vencer;
                 document.getElementById('statVencidos').textContent = summary.habilitaciones_vencidas;
-                
-            } catch (error) {
-                console.error('Error cargando dashboard:', error);
+            } catch (_) {
+                document.getElementById('builderMessage').textContent = 'No se pudo cargar el resumen general.';
             }
         }
 
-        // Inicialización
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', { 
-            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-        });
+        async function loadDashboardList() {
+            try {
+                const dashboards = await api.get('/dashboard/builder');
+                const selector = document.getElementById('dashboardSelector');
+                selector.innerHTML = '';
 
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            auth.logout();
-        });
+                if (!dashboards || dashboards.length === 0) {
+                    selector.innerHTML = '<option value="">No hay dashboards</option>';
+                    document.getElementById('builderMessage').textContent = 'Crea un dashboard para ejecutar consultas.';
+                    document.getElementById('dashboardResults').innerHTML = '';
+                    return;
+                }
+
+                dashboards.forEach((dashboard) => {
+                    const option = document.createElement('option');
+                    option.value = dashboard.id;
+                    option.textContent = `${dashboard.nombre} (${dashboard.visibilidad})`;
+                    selector.appendChild(option);
+                });
+
+                document.getElementById('builderMessage').textContent = '';
+            } catch (error) {
+                document.getElementById('builderMessage').textContent = 'Error cargando dashboards.';
+            }
+        }
+
+        async function createDashboard() {
+            const payload = {
+                nombre: document.getElementById('dashboardName').value,
+                descripcion: document.getElementById('dashboardDescription').value,
+                visibilidad: document.getElementById('dashboardVisibility').value,
+                widgets: [],
+                filters: [],
+            };
+
+            try {
+                const dashboard = await api.post('/dashboard/builder', payload);
+                document.getElementById('builderMessage').textContent = `Dashboard creado: ${dashboard.nombre}`;
+                document.getElementById('createDashboardForm').reset();
+                await loadDashboardList();
+            } catch (error) {
+                document.getElementById('builderMessage').textContent = 'No se pudo crear el dashboard.';
+            }
+        }
+
+        async function executeSelectedDashboard() {
+            const dashboardId = document.getElementById('dashboardSelector').value;
+            if (!dashboardId) {
+                document.getElementById('builderMessage').textContent = 'Selecciona un dashboard primero.';
+                return;
+            }
+
+            try {
+                const result = await api.post(`/dashboard/builder/${dashboardId}/query`, {});
+                renderDashboardResults(result);
+            } catch (error) {
+                document.getElementById('builderMessage').textContent = 'Error al ejecutar el dashboard.';
+            }
+        }
+
+        function renderDashboardResults(result) {
+            const container = document.getElementById('dashboardResults');
+            if (!result || !result.results || result.results.length === 0) {
+                container.innerHTML = '<div class="alert alert-warning">No hay resultados para este dashboard.</div>';
+                return;
+            }
+
+            const cards = result.results.map((widget) => {
+                const rows = widget.results?.map((row) => `<tr><td>${row.label}</td><td>${row.value}</td></tr>`).join('') || '';
+                return `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">${widget.title}</h5>
+                            ${widget.message ? `<p class="text-muted">${widget.message}</p>` : ''}
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead><tr><th>Etiqueta</th><th>Valor</th></tr></thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = cards;
+        }
 
         loadDashboardData();
+        loadDashboardList();
     </script>
 </body>
 </html>

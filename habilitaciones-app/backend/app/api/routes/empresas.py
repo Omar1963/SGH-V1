@@ -6,8 +6,10 @@ from app.db.session import get_db
 from app.db.models.usuario import UserRole
 from app.api.dependencies.auth import RoleChecker
 from app.api.schemas.empresa import Empresa, EmpresaCreate, EmpresaUpdate
+from app.api.schemas.persona import Persona
 from app.domain.empresas.repository import EmpresaRepository
 from app.domain.empresas.service import EmpresaService
+from app.domain.personas.repository import PersonaRepository
 
 router = APIRouter()
 
@@ -29,6 +31,12 @@ async def create_empresa(empresa_in: EmpresaCreate, service: EmpresaService = De
 @router.get("/{empresa_id}", response_model=Empresa, dependencies=[Depends(admin_required)])
 async def get_empresa(empresa_id: int, service: EmpresaService = Depends(get_empresa_service)):
     return await service.get_empresa(empresa_id)
+
+
+@router.get("/{empresa_id}/personas", response_model=List[Persona], dependencies=[Depends(admin_required)])
+async def list_empresa_personas(empresa_id: int, db: AsyncSession = Depends(get_db)):
+    repo = PersonaRepository(db)
+    return await repo.get_all(empresa_id=empresa_id)
 
 @router.put("/{empresa_id}", response_model=Empresa, dependencies=[Depends(admin_required)])
 async def update_empresa(

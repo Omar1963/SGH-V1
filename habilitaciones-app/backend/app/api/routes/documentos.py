@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, status, UploadFile, File, Form, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import FileResponse
 
@@ -54,6 +54,27 @@ async def upload_documento(
         current_user=current_user
     )
 
+
+@router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
+async def create_documento(
+    persona_id: int = Form(...),
+    tipo: str = Form(...),
+    jurisdiccion: str = Form(...),
+    fecha_presentacion: str = Form(...),
+    file: UploadFile = File(...),
+    current_user: Usuario = Depends(access_required),
+    service: DocumentoService = Depends(get_documento_service)
+):
+    # Alias contractual para Documento Maestro
+    return await service.upload_documento(
+        persona_id=persona_id,
+        tipo=tipo,
+        jurisdiccion=jurisdiccion,
+        fecha_presentacion=fecha_presentacion,
+        file=file,
+        current_user=current_user
+    )
+
 @router.get("/{doc_id}", response_model=Documento)
 async def get_documento(
     doc_id: int,
@@ -82,3 +103,21 @@ async def update_documento_status(
     service: DocumentoService = Depends(get_documento_service)
 ):
     return await service.update_status(doc_id, nuevo_estado, current_user)
+
+
+@router.post("/{doc_id}/aprobar", response_model=Documento)
+async def aprobar_documento(
+    doc_id: int,
+    current_user: Usuario = Depends(access_required),
+    service: DocumentoService = Depends(get_documento_service)
+):
+    return await service.update_status(doc_id, EstadoDocumento.APROBADO, current_user)
+
+
+@router.post("/{doc_id}/rechazar", response_model=Documento)
+async def rechazar_documento(
+    doc_id: int,
+    current_user: Usuario = Depends(access_required),
+    service: DocumentoService = Depends(get_documento_service)
+):
+    return await service.update_status(doc_id, EstadoDocumento.RECHAZADO, current_user)

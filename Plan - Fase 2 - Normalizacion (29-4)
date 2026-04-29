@@ -89,7 +89,25 @@ Test de eficiencia al cierre:
 - Incidentes de fuga de datos entre empresas: 0.
 - Éxito: usuario EMPRESA sólo ve/actúa sobre su alcance.
 
-### Etapa 2.6 - Especificación Dashboard Builder v1
+### Etapa 2.6 - Pantalla de acceso empresarial (Alternativa 1)
+Alcance:
+- Implementar portal único de login con estética corporativa, logo institucional y mensaje editorial.
+- Mantener autenticación contra `/api/v1/auth/login` y acceso por JWT.
+- Aplicar RBAC visible en UI para perfiles: `Admin`, `Empresa`, `DataEntry`, `Visita`.
+- Definir menú dinámico post-login según permisos de rol.
+
+Entregables:
+- Nueva `login.html` de nivel empresarial (diseño + accesibilidad + estados de error).
+- Matriz de permisos de navegación por rol.
+- Componente/servicio de sesión para resolver rol y renderizar menú correspondiente.
+
+Test de eficiencia al cierre:
+- Tasa de login exitoso con usuarios válidos: >= 95%.
+- Tiempo de acceso a primera vista útil post-login: <= 3s (p95 local).
+- Errores de autorización de menú (ítems visibles sin permiso): 0.
+- Éxito: cada rol ingresa y visualiza exclusivamente sus opciones habilitadas.
+
+### Etapa 2.7 - Especificación Dashboard Builder v1
 Alcance:
 - Definir especificación funcional/técnica del módulo antes de construirlo.
 - Cerrar modelo de datos, contratos API y UX mínima v1 de forma trazable.
@@ -129,7 +147,7 @@ Test de eficiencia al cierre:
 - Tasa de cambios de alcance post-aprobación: <= 10%.
 - Éxito: backend, frontend y QA validan la misma especificación sin conflictos.
 
-### Etapa 2.7 - Dashboard dinámico y analítica de decisión
+### Etapa 2.8 - Dashboard dinámico y analítica de decisión
 Alcance:
 - Implementar módulo de tableros dinámicos donde el usuario pueda crear vistas (no sólo dashboard estático).
 - Habilitar constructor básico: selección de métrica, dimensión, filtro, agregación, tipo de gráfico y guardado de vista.
@@ -152,7 +170,7 @@ Test de eficiencia al cierre:
 - Cobertura de casos de análisis prioritarios: >= 80%.
 - Éxito: usuarios clave pueden construir y guardar al menos 3 tableros útiles sin soporte técnico.
 
-### Etapa 2.8 - QA automatizado y calidad de release
+### Etapa 2.9 - QA automatizado y calidad de release
 Alcance:
 - Reescritura/ajuste de tests desalineados.
 - Suite mínima: unitarios + integración API + smoke UI.
@@ -167,7 +185,7 @@ Test de eficiencia al cierre:
 - Tasa de tests green objetivo: >= 95%.
 - Éxito: pipeline local reproducible 3 veces seguidas.
 
-### Etapa 2.9 - Roadmap de extensiones (no bloqueante)
+### Etapa 2.10 - Roadmap de extensiones (no bloqueante)
 Alcance:
 - Diseñar incorporación gradual de Azure AI, HF datasets, Vercel Workflow y Netlify.
 - Definir precondiciones técnicas para cada integración.
@@ -191,6 +209,7 @@ Test de eficiencia al cierre:
 7. Etapa 2.7
 8. Etapa 2.8
 9. Etapa 2.9
+10. Etapa 2.10
 
 ## 4) Puertas de avance entre etapas
 - No se avanza si el test de eficiencia de la etapa actual no cumple umbral.

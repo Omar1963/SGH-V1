@@ -3,7 +3,12 @@
  * Centraliza las peticiones al backend y maneja la inyección de JWT.
  */
 
-const BASE_URL = 'http://localhost:8000/api/v1';
+const API_HOST = window.location.hostname || 'localhost';
+const BASE_URL = `http://${API_HOST}:8000/api/v1`;
+
+export function buildApiUrl(path = '') {
+    return `${BASE_URL}${path}`;
+}
 
 const api = {
     /**

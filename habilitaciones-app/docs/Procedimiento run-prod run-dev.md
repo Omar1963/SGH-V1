@@ -82,3 +82,11 @@ Ejecutar verificaciones de funcionamiento de SGH-V1 en dos modos:
   - `docker compose -f docker\docker-compose.yml logs -f`
 - Detener stack prod:
   - `docker compose -f docker\docker-compose.yml down`
+
+## Verificacion de tests backend (Etapa 2.3)
+1. Abrir CMD en `C:\Users\Admin\GitHub\SGH-V1\habilitaciones-app\backend`.
+2. Ejecutar:
+   - `run-tests.bat`
+3. Resultado esperado:
+   - Suite estable (smoke tests API en verde).
+   - Tests legacy marcados como `skipped` hasta su reescritura contractual.
