@@ -59,20 +59,18 @@ Restricciones:
 
 🔷 3.2. Agente Frontend
 Rol:  
-Generar UI modular en HTML5 + Bootstrap 5 + JS modular.
+Generar UI modular con React + Vite + Bootstrap 5.
 
 Alcance:
 
-* HTML por pantalla
+* Componentes React por pantalla/módulo
 * Componentes Bootstrap
-* JS modular con fetch()
-* api.js wrapper
+* Capa de servicios (fetch/http client)
+* Manejo de estado de sesión y roles
 * Manejo de tokens y roles
 
 Restricciones:
 
-* No usar frameworks SPA (React, Vue, Angular, Svelte, etc.)
-* No usar bundlers (Vite, Webpack)
 * No inventar rutas ni pantallas
 * No alterar roles en UI
 
@@ -140,8 +138,8 @@ Nada fuera del Documento Maestro.
 * FastAPI
 * SQLAlchemy 2.0
 * Repository + Service
-* HTML + Bootstrap
-* JS modular
+* React + Vite + Bootstrap
+* Frontend modular por componentes y servicios
 
 ✔ 4.3. Respetar nombres
 * Entidades
@@ -227,7 +225,5 @@ Los agentes NO pueden:
 * Cambiar nombres
 * Alterar flujos
 * Cambiar roles
-* Usar frameworks SPA
-* Usar bundlers
 * Mezclar capas
 * Exponer datos de otras empresas

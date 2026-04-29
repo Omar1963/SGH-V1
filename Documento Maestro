@@ -134,8 +134,9 @@ Empresa externa
 * Repository + Service Pattern
 
 5.2. Frontend
-* HTML + Bootstrap 5
-* JS modular (fetch)
+* React 19 + Vite
+* Bootstrap 5 + CSS modular
+* Capa de servicios frontend (Fetch API)
 * Tokens en localStorage
 * Roles en UI
 
@@ -177,7 +178,7 @@ Registra:
 * Alertas
 * Reportes
 
-7.2. Componentes Bootstrap
+7.2. Componentes UI (Bootstrap + React)
 * Navbar
 * Sidebar
 * Cards KPI
@@ -246,7 +247,7 @@ Registra:
 * SQLAlchemy models
 * Rutas FastAPI
 * Schemas Pydantic
-* Prototipo HTML
+* Prototipo React/Vite
 * Scripts ETL
 * Diagramas de flujo
 * Diagramas entidad‑relación

@@ -1,0 +1,203 @@
+# Plan - Fase 2 - Normalizacion (29/4/2026)
+
+## 0) Objetivo de fase
+Normalizar SGH-V1 para que la ejecución técnica, documental y de QA siga una sola línea: React/Vite en frontend, FastAPI en backend, contrato API estable, pruebas reproducibles y criterios de éxito medibles por etapa.
+
+## 1) Criterios globales de éxito de Fase 2
+- Arquitectura y reglas internas sin contradicciones.
+- Flujo core operable de punta a punta: login -> personas -> documentos -> estados -> habilitaciones -> dashboard.
+- Pruebas automatizadas mínimas estables en entorno local.
+- Trazabilidad: cada etapa cierra con acta de resultados y métricas.
+
+## 2) Etapas de trabajo
+
+### Etapa 2.1 - Gobernanza y baseline técnico
+Alcance:
+- Congelar oficialmente React/Vite como estándar frontend.
+- Alinear documentación de arquitectura y reglas de agentes.
+- Definir baseline de ramas, convenciones y definición de terminado (DoD).
+
+Entregables:
+- Documento Maestro y reglas `.agents` alineados.
+- Checkpoint de baseline en repositorio.
+
+Test de eficiencia al cierre:
+- Duración objetivo: <= 0.5 día.
+- Re-trabajo documental objetivo: 0 cambios contradictorios detectados en revisión cruzada.
+- Éxito: 100% de documentos fuente sin conflicto de stack.
+
+### Etapa 2.2 - Efectividad de Docker y estandar de ejecución
+Alcance:
+- Evaluar Docker como herramienta principal de ejecución local y QA.
+- Corregir `docker-compose` para dev real (volúmenes, healthchecks, orden de arranque, variables).
+- Definir política de uso: cuándo usar Docker y cuándo entorno local puro.
+
+Entregables:
+- Informe de efectividad Docker (pros, contras, costo operativo y decisión final).
+- Compose dev normalizado con healthchecks por servicio.
+- Guía operacional: `docker-first` para integración y `venv+vite` para desarrollo rápido.
+
+Test de eficiencia al cierre:
+- Tiempo objetivo de `docker compose up --build`: <= 8 minutos en máquina base.
+- Éxito de arranque de stack completo en 3 intentos: >= 95%.
+- Errores por orden de servicios (backend antes de db lista): 0.
+- Éxito: decisión explícita de uso Docker por contexto (dev/qa/demo).
+
+### Etapa 2.3 - Normalización de entorno y ejecución
+Alcance:
+- Corregir entorno Python/venv y comandos de test.
+- Estandarizar scripts de arranque backend/frontend/db.
+- Eliminar rutas de ejecución ambiguas.
+
+Entregables:
+- Guía única de arranque local.
+- `pytest` ejecutable en entorno definido.
+- Scripts `run-dev` consistentes.
+
+Test de eficiencia al cierre:
+- Tiempo de bootstrap limpio objetivo: <= 20 minutos.
+- Tasa de arranque exitoso objetivo: >= 90% en 3 ejecuciones consecutivas.
+- Éxito: backend + frontend + db levantan y responden healthcheck.
+
+### Etapa 2.4 - Contrato API mínimo completo
+Alcance:
+- Cerrar brecha entre endpoints planeados y existentes.
+- Definir contrato mínimo por módulos críticos: auth, personas, empresas, documentos, estados, habilitaciones, alertas, dashboard, empresa/*.
+- Estandarizar códigos de error y esquema de respuestas.
+
+Entregables:
+- Matriz Endpoint Plan vs Implementado.
+- OpenAPI v1 normalizado.
+
+Test de eficiencia al cierre:
+- Cobertura de contrato objetivo: >= 85% de endpoints críticos planificados.
+- Ambigüedad de contrato: 0 endpoints sin request/response definido.
+- Éxito: colección de pruebas de API pasa sobre módulos críticos.
+
+### Etapa 2.5 - Flujo funcional core y multi-tenant
+Alcance:
+- Validar y ajustar reglas de rol y aislamiento EMPRESA.
+- Asegurar transiciones de estado documental válidas.
+- Alinear UI React con permisos y estados reales.
+
+Entregables:
+- Flujo core ejecutable en ambiente local.
+- Checklist de seguridad funcional por rol.
+
+Test de eficiencia al cierre:
+- Casos E2E core aprobados: >= 80%.
+- Incidentes de fuga de datos entre empresas: 0.
+- Éxito: usuario EMPRESA sólo ve/actúa sobre su alcance.
+
+### Etapa 2.6 - Especificación Dashboard Builder v1
+Alcance:
+- Definir especificación funcional/técnica del módulo antes de construirlo.
+- Cerrar modelo de datos, contratos API y UX mínima v1 de forma trazable.
+- Alinear alcance con roles, multi-tenant y trazabilidad de auditoría.
+
+Modelo de datos v1 (mínimo):
+- `dashboard_templates`: plantillas base del sistema (globales, versionadas).
+- `dashboards`: tablero creado por usuario (owner, nombre, descripción, visibilidad, timestamps).
+- `dashboard_widgets`: widgets del tablero (tipo gráfico, dataset_key, métrica, dimensión, agregación, orden).
+- `dashboard_filters`: filtros persistentes por tablero/widget (campo, operador, valor, scope).
+- `dashboard_shares`: permisos de acceso por rol/usuario/empresa.
+
+Endpoints v1 (mínimos):
+- `GET /dashboard/catalog` (datasets, métricas, dimensiones, tipos de gráfico permitidos).
+- `POST /dashboard-builder` (crear tablero).
+- `GET /dashboard-builder/{id}` (obtener tablero con widgets/filtros).
+- `PATCH /dashboard-builder/{id}` (editar metadatos/tablero).
+- `POST /dashboard-builder/{id}/widgets` (agregar widget).
+- `PATCH /dashboard-builder/{id}/widgets/{widget_id}` (editar widget).
+- `DELETE /dashboard-builder/{id}/widgets/{widget_id}` (eliminar widget).
+- `POST /dashboard-builder/{id}/query` (ejecutar tablero con filtros runtime).
+- `POST /dashboard-builder/{id}/share` (compartir por rol/usuario con reglas de acceso).
+
+UX mínima v1:
+- Constructor en 3 pasos: `Datos -> Visualización -> Guardar`.
+- Interacciones clave: agregar widget, duplicar widget, reordenar, guardar como borrador/publicado.
+- Biblioteca de visualizaciones inicial: KPI, línea, barras, torta/donut, tabla analítica.
+- Estados de UI: loading, vacío, error de consulta, sin permisos.
+
+Entregables:
+- Documento de especificación `Dashboard Builder v1` (datos + API + UX).
+- Matriz de reglas de acceso por rol para tableros.
+- Criterios de aceptación E2E del constructor v1.
+
+Test de eficiencia al cierre:
+- Ambigüedad de especificación: 0 campos/endpoint sin definición.
+- Tasa de cambios de alcance post-aprobación: <= 10%.
+- Éxito: backend, frontend y QA validan la misma especificación sin conflictos.
+
+### Etapa 2.7 - Dashboard dinámico y analítica de decisión
+Alcance:
+- Implementar módulo de tableros dinámicos donde el usuario pueda crear vistas (no sólo dashboard estático).
+- Habilitar constructor básico: selección de métrica, dimensión, filtro, agregación, tipo de gráfico y guardado de vista.
+- Separar datasets de negocio (backend) del render de visualización (frontend).
+
+Herramientas recomendadas:
+- Frontend (React): `ECharts` como motor principal (alto impacto visual + performance + variedad).
+- Exploración guiada opcional: `Plotly` para casos analíticos avanzados.
+- Backend Python: mantener agregaciones en FastAPI/SQL y evitar render de gráficos en servidor.
+- Python charting (Altair/Bokeh): útil para prototipos analíticos internos y validación de diseño, no como motor primario embebido en la UI React productiva.
+
+Entregables:
+- Página `Dashboard Builder` con guardado de tableros por usuario/rol.
+- Biblioteca de componentes de gráficos reutilizables.
+- Catálogo inicial de KPI + visualizaciones por dominio (vencimientos, estados, rechazos, tiempos, carga operativa).
+
+Test de eficiencia al cierre:
+- Tiempo de creación de tablero nuevo (primer uso): <= 5 minutos.
+- Tiempo de respuesta de interacción (filtro/cambio gráfico): p95 <= 1.5s.
+- Cobertura de casos de análisis prioritarios: >= 80%.
+- Éxito: usuarios clave pueden construir y guardar al menos 3 tableros útiles sin soporte técnico.
+
+### Etapa 2.8 - QA automatizado y calidad de release
+Alcance:
+- Reescritura/ajuste de tests desalineados.
+- Suite mínima: unitarios + integración API + smoke UI.
+- Definir umbrales de calidad para avanzar de fase.
+
+Entregables:
+- Suite de tests estable.
+- Reporte de cobertura funcional y riesgos residuales.
+
+Test de eficiencia al cierre:
+- Tiempo total de suite objetivo: <= 12 minutos.
+- Tasa de tests green objetivo: >= 95%.
+- Éxito: pipeline local reproducible 3 veces seguidas.
+
+### Etapa 2.9 - Roadmap de extensiones (no bloqueante)
+Alcance:
+- Diseñar incorporación gradual de Azure AI, HF datasets, Vercel Workflow y Netlify.
+- Definir precondiciones técnicas para cada integración.
+
+Entregables:
+- Documento de readiness por integración.
+- Plan de adopción por prioridad negocio/impacto.
+
+Test de eficiencia al cierre:
+- Dependencias bloqueantes no resueltas: 0.
+- Decisiones de adopción con costo/beneficio estimado: 100%.
+- Éxito: backlog priorizado de Fase 3 aprobado.
+
+## 3) Orden recomendado de ejecución
+1. Etapa 2.1
+2. Etapa 2.2
+3. Etapa 2.3
+4. Etapa 2.4
+5. Etapa 2.5
+6. Etapa 2.6
+7. Etapa 2.7
+8. Etapa 2.8
+9. Etapa 2.9
+
+## 4) Puertas de avance entre etapas
+- No se avanza si el test de eficiencia de la etapa actual no cumple umbral.
+- Cada cierre requiere:
+  - Resultado de métricas.
+  - Riesgos abiertos.
+  - Decisión GO / NO-GO.
+
+## 5) Opinión técnica (criterio de dirección)
+La decisión de sostener React/Vite es correcta por costo de continuidad y mantenibilidad. El mayor riesgo actual no es tecnológico sino de normalización: contrato API incompleto, entorno de pruebas frágil y reglas/documentación no sincronizadas. Esta Fase 2 reduce ese riesgo antes de escalar funcionalidades nuevas.
