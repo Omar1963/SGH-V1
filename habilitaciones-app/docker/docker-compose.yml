@@ -8,13 +8,20 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       POSTGRES_SERVER: db
       POSTGRES_USER: sgh_user
       POSTGRES_PASSWORD: sgh_password
       POSTGRES_DB: sgh_db
       POSTGRES_PORT: 5432
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/', timeout=2)"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: always
 
   frontend:
@@ -25,7 +32,14 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost/"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     restart: always
 
   db:
@@ -37,4 +51,15 @@ services:
       POSTGRES_DB: sgh_db
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgh_user -d sgh_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     restart: always
+
+volumes:
+  postgres_data:

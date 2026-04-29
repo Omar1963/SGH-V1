@@ -57,12 +57,14 @@ Write-Host "`n[6] Verificando DB..."
 docker exec sgh-db pg_isready
 
 Write-Host "`n[7] Verificando red interna..."
-docker network inspect habilitaciones-app_default >$null 2>&1
+$networkName = (docker compose -f "docker/docker-compose.yml" config --format json | ConvertFrom-Json).networks.PSObject.Properties.Name | Select-Object -First 1
+if (-not $networkName) { $networkName = "docker_default" }
+docker network inspect $networkName >$null 2>&1
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "Red interna OK"
+    Write-Host "Red interna OK ($networkName)"
 }
 else {
-    Write-Host "Red interna NO encontrada"
+    Write-Host "Red interna NO encontrada ($networkName)"
 }
 
 Write-Host "`n=== DIAGNOSTICO COMPLETO ==="
