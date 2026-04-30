@@ -1,0 +1,28 @@
+{
+    "python.defaultInterpreterPath": "C:\\Users\\Admin\\GitHub\\SGH-V1\\habilitaciones-app\\backend\\.venv\\Scripts\\python.exe",
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInSelectedTerminal": true,
+    "python.analysis.extraPaths": [
+        "C:\\Users\\Admin\\GitHub\\SGH-V1\\habilitaciones-app\\backend",
+        "C:\\Users\\Admin\\GitHub\\SGH-V1\\habilitaciones-app\\backend\\app"
+    ],
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.indexing": true,
+    "python.languageServer": "Pylance",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+    },
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/.venv": true,
+        "**/node_modules": true,
+        "**/dist": true
+    },
+    "ruff.enable": true,
+    "ruff.lint.run": "onSave"
+}
