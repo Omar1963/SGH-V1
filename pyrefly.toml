@@ -1,0 +1,48 @@
+###############################################
+# PYREFLY CONFIG - SGH-V1 (Optimizado)
+###############################################
+
+# Intérprete de Python correcto (backend)
+python_interpreter = "C:\\Users\\Admin\\GitHub\\SGH-V1\\habilitaciones-app\\backend\\.venv\\Scripts\\python.exe"
+
+# Raíces de importación (para resolver `app.*`)
+import_roots = [
+    "C:\\Users\\Admin\\GitHub\\SGH-V1\\habilitaciones-app\\backend",
+]
+
+# Archivos incluidos en el análisis
+project-includes = [
+    "**/*.py",
+    "**/*.pyi",
+    "**/*.ipynb",
+]
+
+# Exclusiones recomendadas
+exclude = [
+    # Entorno virtual del backend
+    "habilitaciones-app/backend/.venv/**",
+
+    # Dependencias del frontend
+    "habilitaciones-app/frontend/node_modules/**",
+
+    # Archivos de build
+    "habilitaciones-app/frontend/dist/**",
+
+    # Archivos de Docker
+    "habilitaciones-app/docs/**",
+
+    # Cachés
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+]
+
+# Opciones recomendadas
+[analysis]
+# Evita falsos positivos en imports dinámicos
+allow_unresolved_imports = false
+
+# Nivel de detalle del análisis
+verbosity = "normal"
+
+# Modo estricto para detectar errores reales
+strict = true
