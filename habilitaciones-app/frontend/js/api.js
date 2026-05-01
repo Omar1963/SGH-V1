@@ -49,7 +49,14 @@ const api = {
 
             return await response.json();
         } catch (error) {
-            console.error('API Error:', error);
+            console.error('API Request Error:', {
+                url: `${BASE_URL}${endpoint}`,
+                error: error.message,
+                stack: error.stack
+            });
+            if (error.message === 'Failed to fetch') {
+                console.warn('⚠️ Posible error de CORS o Red. Verifique que el backend esté corriendo en:', BASE_URL);
+            }
             throw error;
         }
     },

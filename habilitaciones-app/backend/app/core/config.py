@@ -1,5 +1,5 @@
-from typing import List, Union
-from pydantic import AnyHttpUrl, validator
+from typing import List, Union, Any
+from pydantic import AnyHttpUrl, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -30,18 +30,26 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "SUPER_SECRET_KEY_CHANGEME"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     
-    BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
+    BACKEND_CORS_ORIGINS: Union[List[str], str] = []
     
     # Directorio para almacenamiento de archivos
     UPLOAD_DIR: str = "uploads"
 
-    @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[AnyHttpUrl], str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> Any:
+        if isinstance(v, str):
+            if v.startswith("[") and v.endswith("]"):
+                try:
+                    import json
+                    return json.loads(v)
+                except Exception:
+                    pass
+            # Caso común: "url1,url2"
+            return [i.strip().rstrip("/") for i in v.split(",") if i.strip()]
+        elif isinstance(v, list):
+            return [str(i).rstrip("/") for i in v]
+        return v
 
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env")
 

@@ -21,7 +21,9 @@ def get_application() -> FastAPI:
 
     # Configuración de CORS
     configured_origins = [str(origin).rstrip("/") for origin in settings.BACKEND_CORS_ORIGINS]
-    allow_origins = configured_origins if configured_origins else DEFAULT_DEV_ORIGINS
+    allow_origins = list(set(configured_origins + DEFAULT_DEV_ORIGINS))
+
+    print(f"INFO: Configured CORS Origins: {allow_origins}")
 
     application.add_middleware(
         CORSMiddleware,
